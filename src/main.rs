@@ -1,62 +1,58 @@
 use bevy::{
     prelude::*,
-    sprite::MaterialMesh2dBundle,
-    window::{PresentMode, WindowTheme},
+    window::{PresentMode, WindowMode},
 };
-use bevy_egui::{egui, EguiContexts, EguiPlugin};
-use components::prelude::*;
+use bevy_egui::EguiPlugin;
+use core::prelude::*;
+use retro_asset_management::prelude::*;
 
-mod components;
+mod core;
+mod retro_ai;
+mod retro_animation;
+mod retro_asset_management;
+mod retro_physics;
+mod retro_tilemap;
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "EVIL DUNGEON !".into(),
-                name: Some("MyWindow".into()),
-                resolution: (800., 600.).into(),
-                present_mode: PresentMode::AutoVsync,
-                window_theme: Some(WindowTheme::Dark),
-                enabled_buttons: bevy::window::EnabledButtons {
-                    maximize: false,
-                    ..Default::default()
-                },
-                visible: true,
-                ..default()
-            }),
-            ..default()
-        }))
+    App::new() //TODO pixel perferct scaling
+        .add_plugins(
+            DefaultPlugins
+                .set(ImagePlugin::default_nearest())
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "EVIL DUNGEON !".into(),
+                        name: Some("MyWindow".into()),
+                        resolution: (1920., 1080.).into(),
+                        present_mode: PresentMode::AutoVsync,
+                        mode: WindowMode::Windowed,
+                        enabled_buttons: bevy::window::EnabledButtons {
+                            maximize: false,
+                            ..Default::default()
+                        },
+                        visible: true,
+                        ..default()
+                    }),
+                    ..default()
+                }),
+        )
         .add_plugins(EguiPlugin)
-        .add_systems(Startup, (setup, setup_camera))
-        .add_systems(Update, ui_example_system)
+        .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(DebugSettings::new())
+        .insert_resource(GameInfo::new())
+        .insert_resource(TexturePackerInfo {})
+        .insert_state(SceneState::Playing)
+        .add_systems(
+            Startup,
+            (
+                load_assets,
+                setup_camera.run_if(in_state(SceneState::Playing)),
+            )
+                .chain(),
+        )
+        //TODO add debug stuff in plugin so it can be toggled on and off
+        .add_systems(
+            Update,
+            ui_example_system.run_if(in_state(SceneState::Playing)),
+        )
         .run();
-}
-
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: meshes.add(Rectangle::default()).into(),
-        transform: Transform::default().with_scale(Vec3::splat(128.)),
-        material: materials.add(Color::BLUE),
-        ..default()
-    });
-}
-
-fn setup_camera(mut commands: Commands) {
-    commands.spawn((
-        Camera2dBundle {
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
-            ..default()
-        },
-        CameraTag::new(),
-    ));
-}
-
-fn ui_example_system(mut contexts: EguiContexts) {
-    egui::Window::new("INSPECTOR").show(contexts.ctx_mut(), |ui| {
-        ui.label("Test stuff");
-    });
 }
