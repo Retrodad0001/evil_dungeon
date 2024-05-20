@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+#[derive(Bundle)]
 pub(crate) struct WizardBundle {}
 
 impl WizardBundle {
