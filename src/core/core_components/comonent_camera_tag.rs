@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub(crate) struct CameraTag;
+pub(crate) struct ComponentCameraTag;
 
-impl CameraTag {
+impl ComponentCameraTag {
     pub(crate) fn new() -> Self {
         Self
     }

@@ -1,36 +1,37 @@
-use crate::retro_asset_management::prelude::*;
+use crate::core::prelude::*;
+use crate::tiw_asset_management::prelude::*;
 use bevy::prelude::*;
 
-use crate::CameraTag;
+use crate::ComponentCameraTag;
 
 pub(crate) fn load_assets(
-    mut commands: Commands,
     bevy_asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut texture_packer_info: ResMut<ResourceAtlasInfo>,
 ) {
-    let texture: Handle<Image> = bevy_asset_server.load("sprites/atlas.png");
+    let atlas_dto: TexturePackerJsonDTO = create_dto_from_json_file();
+    let texture_atlas_layout: TextureAtlasLayout = texture_packer_info.initialize(atlas_dto);
+    let texture_atlas_layout_handle: Handle<TextureAtlasLayout> =
+        texture_atlas_layouts.add(texture_atlas_layout);
+    texture_packer_info.texture_atlas_layout_handle = texture_atlas_layout_handle;
 
-    let layout_dimensions = Vec2::new(1056.0, 528.0); //TODO get this form json
-
-    let layout: TextureAtlasLayout = TextureAtlasLayout::new_empty(layout_dimensions);
-
-    let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
-    // Use only the subset of sprites in the sheet that make up the run animation
-
-    commands.spawn((SpriteSheetBundle {
-        texture,
-        atlas: TextureAtlas {
-            layout: texture_atlas_layout,
-            index: 1, //TODO this should be different and using the import tool
-        },
-        transform: Transform::from_scale(Vec3::splat(6.0)),
-        ..default()
-    },));
+    let atlas_texture: Handle<Image> = bevy_asset_server.load("sprites/atlas.png");
+    texture_packer_info.atlas_texture_handle = atlas_texture;
 }
+
 pub(crate) fn setup_camera(mut commands: Commands) {
     let mut camera_bundle: Camera2dBundle = Camera2dBundle::default();
     // change the settings we want to change:
     camera_bundle.projection.scale = 2.0;
+    commands.spawn((camera_bundle, ComponentCameraTag::new()));
+}
 
-    commands.spawn((camera_bundle, CameraTag::new()));
+pub(crate) fn load_level(mut commands: Commands, atlas_info: ResMut<ResourceAtlasInfo>) {
+    let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
+
+    commands.spawn(KnightBundle::new(
+        atlas_info.atlas_texture_handle.clone(),
+        atlas_info.texture_atlas_layout_handle.clone(),
+        index_knight_idle,
+    ));
 }

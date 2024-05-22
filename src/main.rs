@@ -4,14 +4,14 @@ use bevy::{
 };
 use bevy_egui::EguiPlugin;
 use core::prelude::*;
-use retro_asset_management::prelude::*;
+use tiw_asset_management::prelude::*;
 
 mod core;
-mod retro_ai;
-mod retro_animation;
-mod retro_asset_management;
-mod retro_physics;
-mod retro_tilemap;
+mod tiw_ai;
+mod tiw_animation;
+mod tiw_asset_management;
+mod tiw_physics;
+mod tiw_tilemap;
 
 fn main() {
     let mut app: App = App::new();
@@ -26,7 +26,6 @@ fn main() {
 
     add_screen_playing_on_enter_systems(&mut app);
     add_screen_playing_systems(&mut app);
-    add_screen_playing_on_exit_systems(&mut app);
     add_screen_playing_debug_systems(&mut app);
 
     app.insert_state(ScreenState::Playing);
@@ -61,9 +60,9 @@ fn add_plugins(app: &mut App) {
 
 fn add_resources(app: &mut App) {
     app.insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)));
-    app.insert_resource(DebugSettings::new());
+    app.insert_resource(ResourceDebugSettings::new());
     app.insert_resource(GameInfo::new());
-    app.insert_resource(TexturePackerInfo::new());
+    app.insert_resource(ResourceAtlasInfo::new());
 }
 
 fn add_events(app: &mut App) {
@@ -77,13 +76,11 @@ fn add_screen_menu_systems(_app: &mut App) {}
 fn add_screen_playing_on_enter_systems(app: &mut App) {
     app.add_systems(
         OnEnter(ScreenState::Playing),
-        (load_assets, setup_camera).chain(),
+        (load_assets, setup_camera, load_level).chain(),
     );
 }
 
-fn add_screen_playing_systems(app: &mut App) {}
-
-fn add_screen_playing_on_exit_systems(app: &mut App) {}
+fn add_screen_playing_systems(_app: &mut App) {}
 
 fn add_screen_playing_debug_systems(app: &mut App) {
     app.add_systems(

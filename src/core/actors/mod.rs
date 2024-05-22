@@ -1,5 +1,5 @@
-mod wizard_bundle;
+mod knight_bundle;
 
 pub(crate) mod prelude {
-    pub(crate) use super::wizard_bundle::*;
+    pub(crate) use super::knight_bundle::*;
 }
