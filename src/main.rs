@@ -87,6 +87,9 @@ fn add_screen_playing_systems(_app: &mut App) {}
 
 fn add_screen_playing_debug_systems(app: &mut App) {
     app.add_plugins(PerfUiPlugin);
+    app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin);
+    app.add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin);
+    app.add_plugins(bevy::diagnostic::SystemInformationDiagnosticsPlugin);
 
     app.add_systems(
         Startup,

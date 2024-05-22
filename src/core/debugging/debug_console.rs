@@ -39,8 +39,6 @@ pub(crate) fn debug_console(
     });
 }
 
-
-
 pub(crate) fn debug_show_pivot_points(
     debug_settings: Res<ResourceDebugSettings>,
     query_all_entities: Query<(&Name, &Transform)>,
