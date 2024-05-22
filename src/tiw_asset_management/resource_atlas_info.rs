@@ -5,7 +5,6 @@ use crate::TexturePackerJsonDTO;
 
 #[derive(Resource, Debug, Default)]
 pub(crate) struct ResourceAtlasInfo {
-    pub(crate) layout_dimensions: Vec2,
     pub(crate) file_name_index_mappings: HashMap<usize, String>,
     pub(crate) texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
     pub(crate) atlas_texture_handle: Handle<Image>,
@@ -14,32 +13,31 @@ pub(crate) struct ResourceAtlasInfo {
 impl ResourceAtlasInfo {
     pub(crate) fn new() -> Self {
         ResourceAtlasInfo {
-            layout_dimensions: Vec2::new(0.0, 0.0),
+            //  layout_dimensions: Vec2::new(0.0, 0.0),
             file_name_index_mappings: HashMap::new(),
             texture_atlas_layout_handle: Handle::default(),
             atlas_texture_handle: Handle::default(),
         }
     }
 
-    pub(crate) fn initialize(
+    pub(crate) fn setup_bevy_spite_atlas(
         &mut self,
         texture_packer_dto: TexturePackerJsonDTO,
     ) -> TextureAtlasLayout {
         self.file_name_index_mappings.clear(); //when reloading the assets
 
-        self.layout_dimensions = Vec2::new(
+        let dimensions = Vec2::new(
             texture_packer_dto.meta.size.w as f32,
             texture_packer_dto.meta.size.h as f32,
         );
 
         //setup the layout of the buildin bevy texture atlas
         let mut texture_atlas_layout: TextureAtlasLayout =
-            TextureAtlasLayout::new_empty(self.layout_dimensions);
+            TextureAtlasLayout::new_empty(dimensions);
 
         for dto_line in texture_packer_dto.frames.into_iter().enumerate() {
             let frame_width = dto_line.1.frame.w;
             let frame_height = dto_line.1.frame.h;
-
             let top_x: f32 = dto_line.1.frame.x;
             let top_y: f32 = dto_line.1.frame.y;
             let bottom_x: f32 = dto_line.1.frame.x + frame_width;

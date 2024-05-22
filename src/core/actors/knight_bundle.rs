@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::core::prelude::*;
+
 #[derive(Bundle)]
 pub(crate) struct KnightBundle {
     sprite_sheet_bundle: SpriteSheetBundle,
@@ -11,6 +13,7 @@ impl KnightBundle {
         atlas_texture_handle: Handle<Image>,
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
         index: usize,
+        spawn_position: Vec2,
     ) -> Self {
         Self {
             sprite_sheet_bundle: SpriteSheetBundle {
@@ -19,9 +22,13 @@ impl KnightBundle {
                     layout: texture_atlas_layout_handle,
                     index,
                 },
-                transform: Transform::from_scale(Vec3::splat(6.0)),
+                transform: Transform::from_translation(Vec3::new(
+                    spawn_position.x,
+                    spawn_position.y,
+                    DRAW_INDEX_Z_PLAYER,
+                )),
                 sprite: Sprite {
-                    anchor: bevy::sprite::Anchor::TopLeft,
+                    anchor: bevy::sprite::Anchor::Center,
                     ..Default::default()
                 },
                 ..default()

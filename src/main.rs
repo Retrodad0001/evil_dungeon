@@ -4,6 +4,7 @@ use bevy::{
 };
 use bevy_egui::EguiPlugin;
 use core::prelude::*;
+use iyes_perf_ui::PerfUiPlugin;
 use tiw_asset_management::prelude::*;
 
 mod core;
@@ -59,8 +60,10 @@ fn add_plugins(app: &mut App) {
 }
 
 fn add_resources(app: &mut App) {
-    app.insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)));
-    app.insert_resource(ResourceDebugSettings::new());
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+    app.insert_resource(ClearColor(Color::rgb(0.5, 0.5, 0.5)));
+    app.insert_resource(ResourceDebugSettings::new(VERSION.to_string()));
     app.insert_resource(GameInfo::new());
     app.insert_resource(ResourceAtlasInfo::new());
 }
@@ -83,8 +86,15 @@ fn add_screen_playing_on_enter_systems(app: &mut App) {
 fn add_screen_playing_systems(_app: &mut App) {}
 
 fn add_screen_playing_debug_systems(app: &mut App) {
+    app.add_plugins(PerfUiPlugin);
+
+    app.add_systems(
+        Startup,
+        (debug_show_perf_stats,).run_if(in_state(ScreenState::Playing)),
+    );
+
     app.add_systems(
         Update,
-        word_inspector.run_if(in_state(ScreenState::Playing)),
+        (debug_console, debug_show_pivot_points).run_if(in_state(ScreenState::Playing)),
     );
 }

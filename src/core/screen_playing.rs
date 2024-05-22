@@ -10,7 +10,8 @@ pub(crate) fn load_assets(
     mut texture_packer_info: ResMut<ResourceAtlasInfo>,
 ) {
     let atlas_dto: TexturePackerJsonDTO = create_dto_from_json_file();
-    let texture_atlas_layout: TextureAtlasLayout = texture_packer_info.initialize(atlas_dto);
+    let texture_atlas_layout: TextureAtlasLayout =
+        texture_packer_info.setup_bevy_spite_atlas(atlas_dto);
     let texture_atlas_layout_handle: Handle<TextureAtlasLayout> =
         texture_atlas_layouts.add(texture_atlas_layout);
     texture_packer_info.texture_atlas_layout_handle = texture_atlas_layout_handle;
@@ -22,7 +23,7 @@ pub(crate) fn load_assets(
 pub(crate) fn setup_camera(mut commands: Commands) {
     let mut camera_bundle: Camera2dBundle = Camera2dBundle::default();
     // change the settings we want to change:
-    camera_bundle.projection.scale = 2.0;
+    camera_bundle.projection.scale = 0.3;
     commands.spawn((camera_bundle, ComponentCameraTag::new()));
 }
 
@@ -33,5 +34,6 @@ pub(crate) fn load_level(mut commands: Commands, atlas_info: ResMut<ResourceAtla
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_knight_idle,
+        Vec2::new(50.0, 40.0),
     ));
 }

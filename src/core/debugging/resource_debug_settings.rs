@@ -1,16 +1,16 @@
 use bevy::prelude::*;
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub(crate) struct ResourceDebugSettings {
-    pub(crate) show_performance_stats: bool,
     pub(crate) show_pivot_points: bool,
+    pub(crate) game_version_number: String,
 }
 
 impl ResourceDebugSettings {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(game_version_number: String) -> Self {
         Self {
-            show_performance_stats: false,
-            show_pivot_points: false,
+            game_version_number,
+            show_pivot_points: true,
         }
     }
 }
