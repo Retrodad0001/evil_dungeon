@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 
 #[derive(Resource)]
-pub(crate) struct GameInfo {
-    //like enalble show AI paths
-}
+pub(crate) struct GameInfo {}
 
 impl GameInfo {
     pub(crate) fn new() -> Self {

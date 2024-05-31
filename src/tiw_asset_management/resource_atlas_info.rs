@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::TexturePackerJsonDTO;
 
-#[derive(Resource, Debug, Default)]
+#[derive(Resource, Debug, Default, Reflect)]
 pub(crate) struct ResourceAtlasInfo {
     pub(crate) file_name_index_mappings: HashMap<usize, String>,
     pub(crate) texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
@@ -13,7 +13,6 @@ pub(crate) struct ResourceAtlasInfo {
 impl ResourceAtlasInfo {
     pub(crate) fn new() -> Self {
         ResourceAtlasInfo {
-            //  layout_dimensions: Vec2::new(0.0, 0.0),
             file_name_index_mappings: HashMap::new(),
             texture_atlas_layout_handle: Handle::default(),
             atlas_texture_handle: Handle::default(),
@@ -24,6 +23,8 @@ impl ResourceAtlasInfo {
         &mut self,
         texture_packer_dto: TexturePackerJsonDTO,
     ) -> TextureAtlasLayout {
+        debug!("start - setup_bevy_spite_atlas");
+
         self.file_name_index_mappings.clear(); //when reloading the assets
 
         let dimensions = Vec2::new(
@@ -50,22 +51,22 @@ impl ResourceAtlasInfo {
 
             let atlas_index: usize = texture_atlas_layout.add_texture(atlas_region);
             let filename: String = dto_line.1.filename.clone();
-            debug!("Adding frame: {} at index: {}", filename, atlas_index);
             self.file_name_index_mappings.insert(atlas_index, filename);
         }
 
+        debug!("end - setup_bevy_spite_atlas");
         texture_atlas_layout
     }
 
     pub(crate) fn get_bevy_atlas_index_by_file_name(&self, file_name_needed: &str) -> usize {
-        debug!("Looking for frame name: {}", file_name_needed);
-
         for (index, file_name) in self.file_name_index_mappings.iter() {
             if file_name == file_name_needed {
+                debug!("Found frame name: {}", file_name_needed);
                 return *index;
             }
         }
 
+        error!("Frame name not found in texture packer info.");
         panic!("Frame name not found in texture packer info.");
     }
 }

@@ -1,16 +1,24 @@
 use bevy::{
+    log::LogPlugin,
     prelude::*,
+    render::{
+        settings::{Backends, RenderCreation, WgpuSettings},
+        RenderPlugin,
+    },
     window::{PresentMode, WindowMode},
 };
-use bevy_egui::EguiPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
+use tiw_animation::prelude::*;
 use tiw_asset_management::prelude::*;
 
 mod core;
 mod tiw_ai;
 mod tiw_animation;
 mod tiw_asset_management;
+mod tiw_camera;
 mod tiw_physics;
 mod tiw_tilemap;
 
@@ -27,6 +35,8 @@ fn main() {
 
     add_screen_playing_on_enter_systems(&mut app);
     add_screen_playing_systems(&mut app);
+
+    #[cfg(debug_assertions)]
     add_screen_playing_debug_systems(&mut app);
 
     app.insert_state(ScreenState::Playing);
@@ -35,12 +45,28 @@ fn main() {
 }
 
 fn add_plugins(app: &mut App) {
+    let wgpu_setting: WgpuSettings = WgpuSettings {
+        backends: Some(Backends::VULKAN),
+        ..Default::default()
+    };
+
     app.add_plugins(
         DefaultPlugins
+            .set(LogPlugin {
+                filter: "info,wgpu_core=warn,wgpu_hal=warn,evil_dungeon=debug".into(),
+                level: bevy::log::Level::DEBUG,
+                ..default()
+            })
             .set(ImagePlugin::default_nearest())
+            // setup vulcan backend suppress warnings for now (zie issue #5 or upstream bevy issue #9975)
+            //, remove this when bug is fixed
+            .set(RenderPlugin {
+                render_creation: RenderCreation::Automatic(wgpu_setting),
+                ..default()
+            })
             .set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "EVIL DUNGEON !".into(),
+                    title: "EVIL DUNGEON BEVY ENGINE 2D Demo!".into(),
                     name: Some("MyWindow".into()),
                     resolution: (1920., 1080.).into(),
                     present_mode: PresentMode::AutoVsync,
@@ -56,16 +82,19 @@ fn add_plugins(app: &mut App) {
             }),
     );
 
-    app.add_plugins(EguiPlugin);
+    app.add_plugins(WorldInspectorPlugin::new());
+    app.register_type::<ComponentMovement>();
+    app.register_type::<ComponentAnimation>();
+    app.register_type::<ResourceAtlasInfo>();
+    app.register_type::<ResourceAnimationInfo>();
 }
 
 fn add_resources(app: &mut App) {
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-
     app.insert_resource(ClearColor(Color::rgb(0.5, 0.5, 0.5)));
-    app.insert_resource(ResourceDebugSettings::new(VERSION.to_string()));
+    app.insert_resource(ResourceDebugSettings::new());
     app.insert_resource(GameInfo::new());
     app.insert_resource(ResourceAtlasInfo::new());
+    app.insert_resource(ResourceAnimationInfo::new());
 }
 
 fn add_events(app: &mut App) {
@@ -79,17 +108,41 @@ fn add_screen_menu_systems(_app: &mut App) {}
 fn add_screen_playing_on_enter_systems(app: &mut App) {
     app.add_systems(
         OnEnter(ScreenState::Playing),
-        (load_assets, setup_camera, load_level).chain(),
+        (load_assets, setup_animations, setup_camera, load_level).chain(),
     );
 }
 
-fn add_screen_playing_systems(_app: &mut App) {}
+fn add_screen_playing_systems(app: &mut App) {
+    app.add_systems(
+        Update,
+        (
+            calculate_direction_for_player,
+            calculate_direction_for_enemies,
+            animate_all,
+            calculate_velocity_for_all,
+            update_camera_position,
+        )
+            .chain()
+            .run_if(in_state(ScreenState::Playing)),
+    ); //TODO test without chain
+
+    app.add_systems(
+        FixedUpdate,
+        (
+            physics_determine_collision_for_all,
+            calculate_ai_next_task_for_enemies,
+        )
+            .run_if(in_state(ScreenState::Playing)),
+    );
+}
 
 fn add_screen_playing_debug_systems(app: &mut App) {
     app.add_plugins(PerfUiPlugin);
     app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::SystemInformationDiagnosticsPlugin);
+
+    // app.add_plugins(LogDiagnosticsPlugin::default());
 
     app.add_systems(
         Startup,
@@ -98,6 +151,10 @@ fn add_screen_playing_debug_systems(app: &mut App) {
 
     app.add_systems(
         Update,
-        (debug_console, debug_show_pivot_points).run_if(in_state(ScreenState::Playing)),
+        (
+            debug_show_pivot_points,
+            enable_disable_debug_console_with_f12,
+        )
+            .run_if(in_state(ScreenState::Playing)),
     );
 }

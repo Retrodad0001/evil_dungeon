@@ -1,5 +1,8 @@
-mod comonent_camera_tag;
+mod component_handle_input;
+mod component_movement;
 
 pub(crate) mod prelude {
-    pub(crate) use super::comonent_camera_tag::*;
+
+    pub(crate) use super::component_handle_input::*;
+    pub(crate) use super::component_movement::*;
 }

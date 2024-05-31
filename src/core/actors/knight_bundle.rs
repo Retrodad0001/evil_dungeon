@@ -1,11 +1,16 @@
 use bevy::prelude::*;
 
 use crate::core::prelude::*;
+use crate::tiw_animation::prelude::*;
 
 #[derive(Bundle)]
 pub(crate) struct KnightBundle {
-    sprite_sheet_bundle: SpriteSheetBundle,
     name: Name,
+    actor_kind: ActorKind,
+    sprite_sheet_bundle: SpriteSheetBundle,
+    handle_input: ComponentHandleInput,
+    movement: ComponentMovement,
+    animation: ComponentAnimation,
 }
 
 impl KnightBundle {
@@ -16,6 +21,8 @@ impl KnightBundle {
         spawn_position: Vec2,
     ) -> Self {
         Self {
+            name: Name::new("Knight (player)"),
+            actor_kind: ActorKind::Knight,
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture: atlas_texture_handle,
                 atlas: TextureAtlas {
@@ -29,11 +36,14 @@ impl KnightBundle {
                 )),
                 sprite: Sprite {
                     anchor: bevy::sprite::Anchor::Center,
+                    flip_x: false,
                     ..Default::default()
                 },
                 ..default()
             },
-            name: Name::new("Knight (player)"),
+            handle_input: ComponentHandleInput::new(),
+            movement: ComponentMovement::new(),
+            animation: ComponentAnimation::new(AnimationClipKind::ClipKnightIdle),
         }
     }
 }

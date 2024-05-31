@@ -2,9 +2,13 @@
     "cSpell.words": [
         "buildin",
         "egui",
+        "hashbrown",
         "iyes",
+        "slerp",
         "tilemap",
         "tweening",
-        "Vsync"
+        "Vsync",
+        "VULKAN",
+        "Wgpu"
     ]
 }

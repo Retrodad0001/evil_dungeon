@@ -1,3 +1,5 @@
+cls
+
 cargo test
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 

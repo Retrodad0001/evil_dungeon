@@ -10,21 +10,11 @@ pub(crate) fn create_dto_from_json_file() -> TexturePackerJsonDTO {
 
     let dto: TexturePackerJsonDTO = serde_json::from_str(json.to_string().as_str()).unwrap();
 
-    debug_assert!(
-        dto.meta.size.w > 0 && dto.meta.size.h > 0,
-        "Texture packer json file has invalid dimensions."
-    );
-
-    debug_assert!(
-        !dto.frames.is_empty(),
-        "No frames found in the texture packer json file."
-    );
-
     let _knight_idle_0: &DtoLine = dto
         .frames
         .iter()
         .find(|dto_line| dto_line.filename == KNIGHT_IDLE_0)
-        .expect("knight_idle_0 not found in texture packer json file. is the name correct?");
+        .expect("knight_idle_0 not found in texture packer json file. damn....");
 
     dto
 }
