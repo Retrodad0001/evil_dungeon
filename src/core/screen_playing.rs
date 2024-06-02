@@ -2,7 +2,12 @@ use crate::core::prelude::*;
 use crate::tiw_animation::prelude::*;
 use crate::tiw_asset_management::prelude::*;
 use crate::tiw_camera::prelude::*;
+use crate::tiw_tilemap::prelude::*;
 use bevy::prelude::*;
+
+use super::resource_general_game_state;
+
+//TODO debug: combine tile entities into categories in world inspector
 
 pub(crate) fn load_assets(
     bevy_asset_server: Res<AssetServer>,
@@ -39,22 +44,53 @@ pub(crate) fn setup_camera(mut commands: Commands) {
     debug!("end - setup_camera");
 }
 
-pub(crate) fn load_level(mut commands: Commands, atlas_info: ResMut<ResourceAtlasInfo>) {
-    debug!("start - load_level");
-    let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
+pub(crate) fn new_level(
+    mut commands: Commands,
+    atlas_info: Res<ResourceAtlasInfo>,
+    mut resource_game_state: ResMut<resource_general_game_state::ResourceGeneralGameState>,
+) {
+    debug!("start - new_level");
 
+    //generate floor map
+    let map_width: i32 = 40;
+    let map_height: i32 = 20;
+    resource_game_state
+        .tiw_tile_map
+        .generate_floor_map(map_width, map_height);
+
+    const TILE_SIZE_XY: f32 = 16.0;
+    const TILE_FLOOR: u32 = 0;
+
+    for y in 0..map_height {
+        for x in 0..map_width {
+            let tile: u32 = resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
+            if tile == TILE_FLOOR {
+                let atlas_index_floor: usize =
+                    atlas_info.get_bevy_atlas_index_by_file_name(FLOOR_0);
+                commands.spawn(FloorBundle::new(
+                    atlas_info.atlas_texture_handle.clone(),
+                    atlas_info.texture_atlas_layout_handle.clone(),
+                    atlas_index_floor,
+                    Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
+                ));
+            }
+        }
+    }
+
+    //spawn player in level
+    let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
     commands.spawn(KnightBundle::new(
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_knight_idle,
         Vec2::new(50.0, 40.0),
     ));
-    debug!("end - load_level");
+    debug!("end - new_level");
 }
 
 pub(crate) fn calculate_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut ComponentMovement, &ComponentHandleInput)>,
+    mut player_query: Query<(&mut ComponentMovement, &ComponentPlayerTag)>,
 ) {
     let mut direction: Vec2 = Vec2::new(0.0, 0.0);
 
@@ -71,18 +107,14 @@ pub(crate) fn calculate_direction_for_player(
         direction.y = -1.0;
     }
 
-    let mut player: (Mut<ComponentMovement>, &ComponentHandleInput) = player_query.single_mut();
+    let mut player: (Mut<ComponentMovement>, &ComponentPlayerTag) = player_query.single_mut();
 
     player.0.direction = direction.normalize_or_zero();
 }
 
-pub(crate) fn calculate_ai_next_task_for_enemies() {
-    //TODO calculate_ai_next_task_for_enemies
-}
+pub(crate) fn calculate_ai_next_task_for_enemies() {}
 
-pub(crate) fn calculate_direction_for_enemies() {
-    //TODO calculate_direction_for_enemies
-}
+pub(crate) fn calculate_direction_for_enemies() {}
 
 pub(crate) fn animate_all(
     mut animation_entities_query: Query<(
@@ -100,12 +132,14 @@ pub(crate) fn animate_all(
     for (actor_kind, movement, mut animation, mut texture_atlas, mut sprite) in
         animation_entities_query.iter_mut()
     {
-        let atlas_index: i32 = animation.determine_current_atlas_index_for_animation(
-            actor_kind,
-            &movement.direction,
-            delta_time,
-            &animation_info,
-        );
+        let atlas_index: i32 = animation
+            .determine_current_atlas_index_for_animation(
+                actor_kind,
+                &movement.direction,
+                delta_time,
+                &animation_info,
+            )
+            .unwrap();
 
         texture_atlas.index = atlas_index as usize;
 
@@ -130,10 +164,21 @@ pub(crate) fn calculate_velocity_for_all(
     }
 }
 
-pub(crate) fn physics_determine_collision_for_all() {
-    //TODO physics_determine_collision_for_all
-}
+pub(crate) fn physics_determine_collision_for_all() {}
 
-pub(crate) fn update_camera_position() {
-    //TODO update_camera_position and more stuff
+pub(crate) fn update_camera_position(
+    player_query: Query<&Transform, (With<ComponentPlayerTag>, Without<ComponentCameraTag>)>,
+    mut camera_query: Query<
+        &mut Transform,
+        (With<ComponentCameraTag>, Without<ComponentPlayerTag>),
+    >,
+) {
+    let player_transform: &Transform = player_query.single();
+    let mut camera_transform: Mut<Transform> = camera_query.single_mut();
+
+    camera_transform.translation = Vec3::new(
+        player_transform.translation.x,
+        player_transform.translation.y,
+        0.0,
+    );
 }

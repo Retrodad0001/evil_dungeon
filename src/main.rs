@@ -82,23 +82,29 @@ fn add_plugins(app: &mut App) {
             }),
     );
 
+    //TODO make default windows larger
+    //TODO make this disabled/enabled by F12
+    //TODO add option enable/disable pivot points
     app.add_plugins(WorldInspectorPlugin::new());
+
     app.register_type::<ComponentMovement>();
     app.register_type::<ComponentAnimation>();
     app.register_type::<ResourceAtlasInfo>();
     app.register_type::<ResourceAnimationInfo>();
+    app.register_type::<ComponentPlayerTag>();
 }
 
 fn add_resources(app: &mut App) {
-    app.insert_resource(ClearColor(Color::rgb(0.5, 0.5, 0.5)));
+    app.insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)));
     app.insert_resource(ResourceDebugSettings::new());
-    app.insert_resource(GameInfo::new());
+    app.insert_resource(ResourceGeneralGameState::new());
+    app.insert_resource(ResourceGameSettings::new());
     app.insert_resource(ResourceAtlasInfo::new());
     app.insert_resource(ResourceAnimationInfo::new());
 }
 
-fn add_events(app: &mut App) {
-    app.add_event::<EventPlayerIsHit>();
+fn add_events(_app: &mut App) {
+    // app.add_event::<EventPlayerIsHit>();
 }
 
 fn add_screen_loading_systems(_app: &mut App) {}
@@ -108,7 +114,7 @@ fn add_screen_menu_systems(_app: &mut App) {}
 fn add_screen_playing_on_enter_systems(app: &mut App) {
     app.add_systems(
         OnEnter(ScreenState::Playing),
-        (load_assets, setup_animations, setup_camera, load_level).chain(),
+        (load_assets, setup_animations, setup_camera, new_level).chain(),
     );
 }
 
@@ -122,9 +128,8 @@ fn add_screen_playing_systems(app: &mut App) {
             calculate_velocity_for_all,
             update_camera_position,
         )
-            .chain()
             .run_if(in_state(ScreenState::Playing)),
-    ); //TODO test without chain
+    );
 
     app.add_systems(
         FixedUpdate,

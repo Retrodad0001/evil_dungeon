@@ -1,7 +1,6 @@
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 
 use super::prelude::{AnimationClipKind, TiwAnimationClip};
-use crate::core::prelude::*;
 use crate::tiw_asset_management::prelude::*;
 
 #[derive(Resource, Debug, Default, Reflect)]
@@ -28,8 +27,8 @@ impl ResourceAnimationInfo {
             AnimationClipKind::ClipKnightIdle,
             TiwAnimationClip::new(
                 AnimationClipKind::ClipKnightIdle,
-                animation_frames, //TODO this is not correct and add clip for knight walking
-                1.0,
+                animation_frames,
+                0.2,
                 false,
             ),
         );
@@ -45,7 +44,7 @@ impl ResourceAnimationInfo {
             AnimationClipKind::ClipKnightMoving,
             TiwAnimationClip::new(
                 AnimationClipKind::ClipKnightMoving,
-                animation_frames, //TODO this is not correct and add clip for knight walking
+                animation_frames,
                 0.1,
                 false,
             ),

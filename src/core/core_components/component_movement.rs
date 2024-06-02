@@ -6,13 +6,13 @@ use bevy::prelude::*;
 pub(crate) struct ComponentMovement {
     pub(crate) direction: Vec2,
     pub(crate) current_velocity: Vec2,
-    speed: f32,
+    current_speed: f32,
 }
 
 impl ComponentMovement {
     pub(crate) fn new() -> Self {
         Self {
-            speed: 80.0, //TODO rename to max_speed and add param in new
+            current_speed: 80.0, //TODO rename to max_speed and add param in new
             direction: Vec2::new(0.0, 0.0),
             current_velocity: Vec2::new(0.0, 0.0),
         }
@@ -25,7 +25,7 @@ impl ComponentMovement {
             return;
         }
 
-        self.current_velocity = self.direction * self.speed * *delta_time;
+        self.current_velocity = self.direction * self.current_speed * *delta_time;
 
         debug_assert!(
             self.current_velocity.length() > 0.0,

@@ -1,19 +1,14 @@
 use bevy::prelude::*;
 
 use crate::core::prelude::*;
-use crate::tiw_animation::prelude::*;
 
 #[derive(Bundle)]
-pub(crate) struct KnightBundle {
+pub(crate) struct FloorBundle {
     name: Name,
-    player_tag: ComponentPlayerTag,
-    actor_kind: ActorKind,
     sprite_sheet_bundle: SpriteSheetBundle,
-    movement: ComponentMovement,
-    animation: ComponentAnimation,
 }
 
-impl KnightBundle {
+impl FloorBundle {
     pub fn new(
         atlas_texture_handle: Handle<Image>,
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
@@ -21,9 +16,7 @@ impl KnightBundle {
         spawn_position: Vec2,
     ) -> Self {
         Self {
-            name: Name::new("Knight (player)"),
-            player_tag: ComponentPlayerTag::new(),
-            actor_kind: ActorKind::Knight,
+            name: Name::new("Floor tile"),
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture: atlas_texture_handle,
                 atlas: TextureAtlas {
@@ -33,17 +26,15 @@ impl KnightBundle {
                 transform: Transform::from_translation(Vec3::new(
                     spawn_position.x,
                     spawn_position.y,
-                    DRAW_INDEX_Z_PLAYER,
+                    DRAW_INDEX_Z_TILEMAP_FLOOR,
                 )),
                 sprite: Sprite {
-                    anchor: bevy::sprite::Anchor::Center,
+                    anchor: bevy::sprite::Anchor::TopLeft,
                     flip_x: false,
                     ..Default::default()
                 },
                 ..default()
             },
-            movement: ComponentMovement::new(),
-            animation: ComponentAnimation::new(AnimationClipKind::ClipKnightIdle),
         }
     }
 }

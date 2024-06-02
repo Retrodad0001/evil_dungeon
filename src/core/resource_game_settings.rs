@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 #[derive(Resource)]
-pub(crate) struct GameInfo {}
+pub(crate) struct ResourceGameSettings {}
 
-impl GameInfo {
+impl ResourceGameSettings {
     pub(crate) fn new() -> Self {
         Self {}
     }

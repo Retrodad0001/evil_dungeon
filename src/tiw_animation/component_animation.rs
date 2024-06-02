@@ -8,7 +8,7 @@ use bevy::prelude::*;
 pub(crate) struct ComponentAnimation {
     previous_animation_kind: AnimationClipKind,
     animation_frame_timer_sec: f32,
-    current_animation_frame: i32, //TODO make private and for more fields?
+    current_animation_frame: i32,
 }
 
 impl ComponentAnimation {
@@ -27,11 +27,15 @@ impl ComponentAnimation {
         direction: &Vec2,
         delta_time: f32,
         animation_info: &Res<ResourceAnimationInfo>,
-    ) -> i32 {
+    ) -> Option<i32> {
         //determine the current animation clip based on the direction
 
-        let new_animation_kind: AnimationClipKind =
+        let animation_kind_option: Option<AnimationClipKind> =
             self.determine_animation_kind(actor_kind, direction);
+
+        animation_kind_option.as_ref()?;
+
+        let new_animation_kind: AnimationClipKind = animation_kind_option.unwrap();
 
         if let Some(new_animation_clip) = animation_info.animation_clips.get(&new_animation_kind) {
             if self.previous_animation_kind != new_animation_kind {
@@ -57,13 +61,13 @@ impl ComponentAnimation {
             let current_atlas_index: i32 =
                 new_animation_clip.animation_frames[self.current_animation_frame as usize];
 
-            current_atlas_index
+            Some(current_atlas_index)
         } else {
             error!(
                 "AnimationClipKind not found in determine_current_atlas_index_for_animation : {:?}",
                 new_animation_kind
             );
-            0
+            None
         }
     }
 
@@ -72,16 +76,20 @@ impl ComponentAnimation {
         &mut self,
         actor_kind: &ActorKind,
         direction: &Vec2,
-    ) -> AnimationClipKind {
+    ) -> Option<AnimationClipKind> {
         let actor_is_moving: bool = direction.length() > 0.0;
 
         match actor_kind {
             ActorKind::Knight => {
                 if actor_is_moving {
-                    AnimationClipKind::ClipKnightMoving
+                    Some(AnimationClipKind::ClipKnightMoving)
                 } else {
-                    AnimationClipKind::ClipKnightIdle
+                    Some(AnimationClipKind::ClipKnightIdle)
                 }
+            }
+            ActorKind::Wall => {
+                //there is no animation for walls
+                None
             }
         }
     }
