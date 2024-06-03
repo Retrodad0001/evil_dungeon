@@ -1,8 +1,10 @@
 use crate::core::prelude::*;
 use crate::tiw_asset_management::prelude::*;
 use crate::tiw_tilemap::prelude::MapGenerationInput;
+use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use bevy::prelude::*;
 
+use super::events::prelude::EventCollisionDetected;
 use super::resource_general_game_state;
 
 pub(crate) fn load_assets(
@@ -173,7 +175,28 @@ pub(crate) fn calculate_velocity_for_all(
     }
 }
 
-pub(crate) fn physics_determine_collision_for_all() {}
+pub(crate) fn physics_determine_collision_for_all(
+    collision_entities_query: Query<(Entity, &Name, &Transform, &mut ComponentCollision)>,
+    mut event_collision_detected: EventWriter<EventCollisionDetected>,
+) {
+    for (entity_a, name_a, transform_a, collision_a) in collision_entities_query.iter() {
+        for (entity_b, name_b, transform_b, collision_b) in collision_entities_query.iter() {
+            if entity_a == entity_b {
+                continue;
+            }
+
+            let entity_a_bounds: Aabb2d = collision_a.get_aabb2d_bounds(transform_a);
+            let entity_b_bounds: Aabb2d = collision_b.get_aabb2d_bounds(transform_b);
+            let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
+
+            if has_collided {
+                //TODO add event with useful info
+                event_collision_detected.send(EventCollisionDetected());
+                debug!("collision between {:?} and {:?}", name_a, name_b);
+            }
+        }
+    }
+}
 
 pub(crate) fn update_camera_position(
     player_query: Query<&Transform, (With<ComponentPlayerTag>, Without<ComponentCameraTag>)>,

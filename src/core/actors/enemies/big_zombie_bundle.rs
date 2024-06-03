@@ -11,6 +11,7 @@ pub(crate) struct BigZombieBundle {
     animation: ComponentAnimator,
     health: ComponentHealth,
     collision: ComponentCollision,
+    damage_dealer: ComponentDealDamage,
 }
 
 impl BigZombieBundle {
@@ -43,9 +44,10 @@ impl BigZombieBundle {
                 ..default()
             },
             movement: ComponentMovement::new(),
-            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving), //TODO chenge and test still working
+            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving),
             health: ComponentHealth::new(start_health),
             collision: ComponentCollision::new(),
+            damage_dealer: ComponentDealDamage::new(25),
         }
     }
 }

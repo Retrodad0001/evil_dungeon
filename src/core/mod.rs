@@ -15,7 +15,7 @@ pub(crate) mod prelude {
     pub(crate) use super::actors::prelude::*;
     pub(crate) use super::core_components::prelude::*;
     pub(crate) use super::debugging::prelude::*;
-    //pub(crate) use super::events::prelude::*;
+    pub(crate) use super::events::prelude::*;
     pub(crate) use super::resource_general_game_state::*;
     // pub(crate) use super::screen_loading::*;
     // pub(crate) use super::screen_menu::*;

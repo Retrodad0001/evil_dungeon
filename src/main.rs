@@ -96,8 +96,8 @@ fn add_resources(app: &mut App) {
     app.insert_resource(ResourceAnimationInfo::new());
 }
 
-fn add_events(_app: &mut App) {
-    // app.add_event::<EventPlayerIsHit>();
+fn add_events(app: &mut App) {
+    app.add_event::<EventCollisionDetected>();
 }
 
 fn add_screen_loading_systems(_app: &mut App) {}

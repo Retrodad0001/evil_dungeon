@@ -12,6 +12,7 @@ pub(crate) struct KnightBundle {
     animation: ComponentAnimator,
     health: ComponentHealth,
     collision: ComponentCollision,
+    damage_dealer: ComponentDealDamage,
 }
 
 impl KnightBundle {
@@ -48,6 +49,7 @@ impl KnightBundle {
             animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightIdle),
             health: ComponentHealth::new(start_health),
             collision: ComponentCollision::new(),
+            damage_dealer: ComponentDealDamage::new(10),
         }
     }
 }
