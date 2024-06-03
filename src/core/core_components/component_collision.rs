@@ -2,9 +2,9 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
-pub(crate) struct ComponentCameraTag;
+pub(crate) struct ComponentCollision;
 
-impl ComponentCameraTag {
+impl ComponentCollision {
     pub(crate) fn new() -> Self {
         Self
     }

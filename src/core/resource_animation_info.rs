@@ -1,9 +1,9 @@
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 
 use crate::{
-    ComponentAnimationClip, ComponentAnimationClipKind, TexturePackerAtlasInfo, KNIGHT_IDLE_0,
-    KNIGHT_IDLE_1, KNIGHT_IDLE_2, KNIGHT_IDLE_3, KNIGHT_RUN_0, KNIGHT_RUN_1, KNIGHT_RUN_2,
-    KNIGHT_RUN_3,
+    ComponentAnimationClip, ComponentAnimationClipKind, TexturePackerAtlasInfo, BIG_ZOMBIE_IDLE_0,
+    BIG_ZOMBIE_IDLE_1, BIG_ZOMBIE_IDLE_2, BIG_ZOMBIE_IDLE_3, KNIGHT_IDLE_0, KNIGHT_IDLE_1,
+    KNIGHT_IDLE_2, KNIGHT_IDLE_3, KNIGHT_RUN_0, KNIGHT_RUN_1, KNIGHT_RUN_2, KNIGHT_RUN_3,
 };
 
 #[derive(Resource, Debug, Default, Reflect)]
@@ -27,9 +27,9 @@ impl ResourceAnimationInfo {
         ];
 
         self.animation_clips.insert(
-            ComponentAnimationClipKind::ClipKnightIdle,
+            ComponentAnimationClipKind::KnightIdle,
             ComponentAnimationClip::new(
-                ComponentAnimationClipKind::ClipKnightIdle,
+                ComponentAnimationClipKind::KnightIdle,
                 animation_frames,
                 0.2,
                 false,
@@ -44,11 +44,28 @@ impl ResourceAnimationInfo {
         ];
 
         self.animation_clips.insert(
-            ComponentAnimationClipKind::ClipKnightMoving,
+            ComponentAnimationClipKind::KnightMoving,
             ComponentAnimationClip::new(
-                ComponentAnimationClipKind::ClipKnightMoving,
+                ComponentAnimationClipKind::KnightMoving,
                 animation_frames,
                 0.1,
+                false,
+            ),
+        );
+
+        let animation_frames: Vec<i32> = vec![
+            resource_atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0) as i32,
+            resource_atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_1) as i32,
+            resource_atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_2) as i32,
+            resource_atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_3) as i32,
+        ];
+
+        self.animation_clips.insert(
+            ComponentAnimationClipKind::BigZombieIdle,
+            ComponentAnimationClip::new(
+                ComponentAnimationClipKind::BigZombieIdle,
+                animation_frames,
+                0.2,
                 false,
             ),
         );

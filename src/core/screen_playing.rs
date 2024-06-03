@@ -79,8 +79,21 @@ pub(crate) fn new_level(
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_knight_idle,
-        Vec2::new(50.0, 40.0),
+        Vec2::new(8.0, 8.0),
+        100,
     ));
+
+    //spawn enemies in level
+    let index_big_zombie_idle: usize =
+        atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
+    commands.spawn(BigZombieBundle::new(
+        atlas_info.atlas_texture_handle.clone(),
+        atlas_info.texture_atlas_layout_handle.clone(),
+        index_big_zombie_idle,
+        Vec2::new(140.0, 140.0),
+        50,
+    ));
+
     debug!("end - new_level");
 }
 

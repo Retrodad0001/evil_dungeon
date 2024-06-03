@@ -14,7 +14,7 @@ pub(crate) fn debug_show_pivot_points(
             .into_iter()
             .for_each(|(_name, transform): (&Name, &Transform)| {
                 let position: Vec2 = Vec2::new(transform.translation.x, transform.translation.y);
-                gizmos.circle_2d(position, 2.0, Color::LIME_GREEN);
+                gizmos.circle_2d(position, 0.5, Color::LIME_GREEN);
             });
     }
 }

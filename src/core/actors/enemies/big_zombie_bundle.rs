@@ -3,9 +3,8 @@ use bevy::prelude::*;
 use crate::core::prelude::*;
 
 #[derive(Bundle)]
-pub(crate) struct KnightBundle {
+pub(crate) struct BigZombieBundle {
     name: Name,
-    player_tag: ComponentPlayerTag,
     actor_kind: ComponentActorKind,
     sprite_sheet_bundle: SpriteSheetBundle,
     movement: ComponentMovement,
@@ -14,7 +13,7 @@ pub(crate) struct KnightBundle {
     collision: ComponentCollision,
 }
 
-impl KnightBundle {
+impl BigZombieBundle {
     pub fn new(
         atlas_texture_handle: Handle<Image>,
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
@@ -23,9 +22,8 @@ impl KnightBundle {
         start_health: u32,
     ) -> Self {
         Self {
-            name: Name::new("Knight (player)"),
-            player_tag: ComponentPlayerTag::new(),
-            actor_kind: ComponentActorKind::Knight,
+            name: Name::new("Big Zombie"),
+            actor_kind: ComponentActorKind::BigZombie,
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture: atlas_texture_handle,
                 atlas: TextureAtlas {
@@ -45,7 +43,7 @@ impl KnightBundle {
                 ..default()
             },
             movement: ComponentMovement::new(),
-            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightIdle),
+            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving), //TODO chenge and test still working
             health: ComponentHealth::new(start_health),
             collision: ComponentCollision::new(),
         }

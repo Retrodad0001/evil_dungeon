@@ -5,5 +5,6 @@ use bevy::prelude::*;
 pub(crate) enum ComponentActorKind {
     #[default]
     Knight,
+    BigZombie,
     Wall,
 }

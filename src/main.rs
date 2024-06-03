@@ -79,6 +79,9 @@ fn add_plugins(app: &mut App) {
 
     app.register_type::<ComponentMovement>();
     app.register_type::<ComponentAnimator>();
+    app.register_type::<ComponentActorKind>();
+    app.register_type::<ComponentCollision>();
+    app.register_type::<ComponentHealth>();
     app.register_type::<TexturePackerAtlasInfo>();
     app.register_type::<ResourceAnimationInfo>();
     app.register_type::<ComponentPlayerTag>();

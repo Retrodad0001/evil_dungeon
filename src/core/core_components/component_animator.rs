@@ -30,7 +30,7 @@ impl ComponentAnimator {
         //determine the current animation clip based on the direction
 
         let animation_kind_option: Option<ComponentAnimationClipKind> =
-            self.determine_animation_kind(actor_kind, direction);
+            self.determine_animation_clip(actor_kind, direction);
 
         animation_kind_option.as_ref()?;
 
@@ -71,7 +71,7 @@ impl ComponentAnimator {
     }
 
     #[inline(always)]
-    fn determine_animation_kind(
+    fn determine_animation_clip(
         &mut self,
         actor_kind: &ComponentActorKind,
         direction: &Vec2,
@@ -81,14 +81,21 @@ impl ComponentAnimator {
         match actor_kind {
             ComponentActorKind::Knight => {
                 if actor_is_moving {
-                    Some(ComponentAnimationClipKind::ClipKnightMoving)
+                    Some(ComponentAnimationClipKind::KnightMoving)
                 } else {
-                    Some(ComponentAnimationClipKind::ClipKnightIdle)
+                    Some(ComponentAnimationClipKind::KnightIdle)
                 }
             }
             ComponentActorKind::Wall => {
                 //there is no animation for walls
                 None
+            }
+            ComponentActorKind::BigZombie => {
+                if actor_is_moving {
+                    Some(ComponentAnimationClipKind::BigZombieMoving)
+                } else {
+                    Some(ComponentAnimationClipKind::BigZombieIdle)
+                }
             }
         }
     }

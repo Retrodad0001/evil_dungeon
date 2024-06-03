@@ -4,6 +4,8 @@ use bevy::prelude::*;
 #[reflect(Resource)]
 pub(crate) enum ComponentAnimationClipKind {
     #[default]
-    ClipKnightIdle = 0,
-    ClipKnightMoving = 1,
+    KnightIdle = 0,
+    KnightMoving = 1,
+    BigZombieIdle = 2,
+    BigZombieMoving = 3,
 }
