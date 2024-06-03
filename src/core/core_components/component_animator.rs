@@ -1,18 +1,17 @@
 use crate::core::prelude::*;
-use crate::tiw_animation::prelude::*;
 
 use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub(crate) struct ComponentAnimation {
-    previous_animation_kind: AnimationClipKind,
+pub(crate) struct ComponentAnimator {
+    previous_animation_kind: ComponentAnimationClipKind,
     animation_frame_timer_sec: f32,
     current_animation_frame: i32,
 }
 
-impl ComponentAnimation {
-    pub(crate) fn new(previous_animation_kind: AnimationClipKind) -> Self {
+impl ComponentAnimator {
+    pub(crate) fn new(previous_animation_kind: ComponentAnimationClipKind) -> Self {
         Self {
             previous_animation_kind,
             animation_frame_timer_sec: 0.0,
@@ -23,19 +22,19 @@ impl ComponentAnimation {
     #[inline(always)]
     pub(crate) fn determine_current_atlas_index_for_animation(
         &mut self,
-        actor_kind: &ActorKind,
+        actor_kind: &ComponentActorKind,
         direction: &Vec2,
         delta_time: f32,
         animation_info: &Res<ResourceAnimationInfo>,
     ) -> Option<i32> {
         //determine the current animation clip based on the direction
 
-        let animation_kind_option: Option<AnimationClipKind> =
+        let animation_kind_option: Option<ComponentAnimationClipKind> =
             self.determine_animation_kind(actor_kind, direction);
 
         animation_kind_option.as_ref()?;
 
-        let new_animation_kind: AnimationClipKind = animation_kind_option.unwrap();
+        let new_animation_kind: ComponentAnimationClipKind = animation_kind_option.unwrap();
 
         if let Some(new_animation_clip) = animation_info.animation_clips.get(&new_animation_kind) {
             if self.previous_animation_kind != new_animation_kind {
@@ -74,20 +73,20 @@ impl ComponentAnimation {
     #[inline(always)]
     fn determine_animation_kind(
         &mut self,
-        actor_kind: &ActorKind,
+        actor_kind: &ComponentActorKind,
         direction: &Vec2,
-    ) -> Option<AnimationClipKind> {
+    ) -> Option<ComponentAnimationClipKind> {
         let actor_is_moving: bool = direction.length() > 0.0;
 
         match actor_kind {
-            ActorKind::Knight => {
+            ComponentActorKind::Knight => {
                 if actor_is_moving {
-                    Some(AnimationClipKind::ClipKnightMoving)
+                    Some(ComponentAnimationClipKind::ClipKnightMoving)
                 } else {
-                    Some(AnimationClipKind::ClipKnightIdle)
+                    Some(ComponentAnimationClipKind::ClipKnightIdle)
                 }
             }
-            ActorKind::Wall => {
+            ComponentActorKind::Wall => {
                 //there is no animation for walls
                 None
             }

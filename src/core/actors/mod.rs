@@ -1,7 +1,10 @@
-mod actor_kind;
-mod knight_bundle;
+mod camera;
+mod enemies;
+mod player;
+mod tiles;
 
 pub(crate) mod prelude {
-    pub(crate) use super::actor_kind::*;
-    pub(crate) use super::knight_bundle::*;
+    pub(crate) use super::camera::prelude::*;
+    pub(crate) use super::player::prelude::*;
+    pub(crate) use super::tiles::prelude::*;
 }

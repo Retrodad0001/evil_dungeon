@@ -1,18 +1,14 @@
 use crate::core::prelude::*;
-use crate::tiw_animation::prelude::*;
 use crate::tiw_asset_management::prelude::*;
-use crate::tiw_camera::prelude::*;
-use crate::tiw_tilemap::prelude::*;
+use crate::tiw_tilemap::prelude::MapGenerationInput;
 use bevy::prelude::*;
 
 use super::resource_general_game_state;
 
-//TODO debug: combine tile entities into categories in world inspector
-
 pub(crate) fn load_assets(
     bevy_asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut texture_packer_info: ResMut<ResourceAtlasInfo>,
+    mut texture_packer_info: ResMut<TexturePackerAtlasInfo>,
 ) {
     debug!("start - load_assets");
 
@@ -30,7 +26,7 @@ pub(crate) fn load_assets(
 }
 
 pub(crate) fn setup_animations(
-    resource_atlas_info: ResMut<ResourceAtlasInfo>,
+    resource_atlas_info: ResMut<TexturePackerAtlasInfo>,
     mut resource_animation_info: ResMut<ResourceAnimationInfo>,
 ) {
     debug!("start - setup_animations");
@@ -46,23 +42,23 @@ pub(crate) fn setup_camera(mut commands: Commands) {
 
 pub(crate) fn new_level(
     mut commands: Commands,
-    atlas_info: Res<ResourceAtlasInfo>,
+    atlas_info: Res<TexturePackerAtlasInfo>,
     mut resource_game_state: ResMut<resource_general_game_state::ResourceGeneralGameState>,
 ) {
     debug!("start - new_level");
 
     //generate floor map
-    let map_width: i32 = 40;
-    let map_height: i32 = 20;
+    let map_generation_input = MapGenerationInput::new(40, 20, 0);
+
     resource_game_state
         .tiw_tile_map
-        .generate_floor_map(map_width, map_height);
+        .generate_floor_map(map_generation_input);
 
     const TILE_SIZE_XY: f32 = 16.0;
     const TILE_FLOOR: u32 = 0;
 
-    for y in 0..map_height {
-        for x in 0..map_width {
+    for y in 0..resource_game_state.tiw_tile_map.map_height {
+        for x in 0..resource_game_state.tiw_tile_map.map_width {
             let tile: u32 = resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
             if tile == TILE_FLOOR {
                 let atlas_index_floor: usize =
@@ -118,9 +114,9 @@ pub(crate) fn calculate_direction_for_enemies() {}
 
 pub(crate) fn animate_all(
     mut animation_entities_query: Query<(
-        &ActorKind,
+        &ComponentActorKind,
         &ComponentMovement,
-        &mut ComponentAnimation,
+        &mut ComponentAnimator,
         &mut TextureAtlas,
         &mut Sprite,
     )>,

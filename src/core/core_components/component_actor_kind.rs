@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
-pub(crate) enum ActorKind {
+pub(crate) enum ComponentActorKind {
     #[default]
     Knight,
     Wall,

@@ -11,15 +11,10 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
-use tiw_animation::prelude::*;
 use tiw_asset_management::prelude::*;
 
 mod core;
-mod tiw_ai;
-mod tiw_animation;
 mod tiw_asset_management;
-mod tiw_camera;
-mod tiw_physics;
 mod tiw_tilemap;
 
 fn main() {
@@ -36,10 +31,10 @@ fn main() {
     add_screen_playing_on_enter_systems(&mut app);
     add_screen_playing_systems(&mut app);
 
+    app.insert_state(ScreenState::Playing);
+
     #[cfg(debug_assertions)]
     add_screen_playing_debug_systems(&mut app);
-
-    app.insert_state(ScreenState::Playing);
 
     app.run();
 }
@@ -82,14 +77,9 @@ fn add_plugins(app: &mut App) {
             }),
     );
 
-    //TODO make default windows larger
-    //TODO make this disabled/enabled by F12
-    //TODO add option enable/disable pivot points
-    app.add_plugins(WorldInspectorPlugin::new());
-
     app.register_type::<ComponentMovement>();
-    app.register_type::<ComponentAnimation>();
-    app.register_type::<ResourceAtlasInfo>();
+    app.register_type::<ComponentAnimator>();
+    app.register_type::<TexturePackerAtlasInfo>();
     app.register_type::<ResourceAnimationInfo>();
     app.register_type::<ComponentPlayerTag>();
 }
@@ -99,7 +89,7 @@ fn add_resources(app: &mut App) {
     app.insert_resource(ResourceDebugSettings::new());
     app.insert_resource(ResourceGeneralGameState::new());
     app.insert_resource(ResourceGameSettings::new());
-    app.insert_resource(ResourceAtlasInfo::new());
+    app.insert_resource(TexturePackerAtlasInfo::new());
     app.insert_resource(ResourceAnimationInfo::new());
 }
 
@@ -142,12 +132,11 @@ fn add_screen_playing_systems(app: &mut App) {
 }
 
 fn add_screen_playing_debug_systems(app: &mut App) {
+    app.add_plugins(WorldInspectorPlugin::new());
     app.add_plugins(PerfUiPlugin);
     app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::SystemInformationDiagnosticsPlugin);
-
-    // app.add_plugins(LogDiagnosticsPlugin::default());
 
     app.add_systems(
         Startup,

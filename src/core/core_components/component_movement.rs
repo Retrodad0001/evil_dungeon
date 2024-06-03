@@ -1,18 +1,18 @@
-use bevy::math::prelude::*;
 use bevy::prelude::*;
+//TODO use bevy_math::Dir2; -->use Dir2   crates/bevy_math/src/direction.rs
 
 #[derive(Component, Reflect, Resource, Default)]
 #[reflect(Resource)]
 pub(crate) struct ComponentMovement {
     pub(crate) direction: Vec2,
     pub(crate) current_velocity: Vec2,
-    current_speed: f32,
+    max_speed: f32,
 }
 
 impl ComponentMovement {
     pub(crate) fn new() -> Self {
         Self {
-            current_speed: 80.0, //TODO rename to max_speed and add param in new
+            max_speed: 80.0,
             direction: Vec2::new(0.0, 0.0),
             current_velocity: Vec2::new(0.0, 0.0),
         }
@@ -25,7 +25,7 @@ impl ComponentMovement {
             return;
         }
 
-        self.current_velocity = self.direction * self.current_speed * *delta_time;
+        self.current_velocity = self.direction * self.max_speed * *delta_time;
 
         debug_assert!(
             self.current_velocity.length() > 0.0,

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::component_camera_tag::ComponentCameraTag;
+use crate::core::prelude::*;
 
 #[derive(Bundle)]
 pub(crate) struct TiWCamera2dBundle {

@@ -4,15 +4,15 @@ use std::collections::HashMap;
 use crate::TexturePackerJsonDTO;
 
 #[derive(Resource, Debug, Default, Reflect)]
-pub(crate) struct ResourceAtlasInfo {
+pub(crate) struct TexturePackerAtlasInfo {
     pub(crate) file_name_index_mappings: HashMap<usize, String>,
     pub(crate) texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
     pub(crate) atlas_texture_handle: Handle<Image>,
 }
 
-impl ResourceAtlasInfo {
+impl TexturePackerAtlasInfo {
     pub(crate) fn new() -> Self {
-        ResourceAtlasInfo {
+        TexturePackerAtlasInfo {
             file_name_index_mappings: HashMap::new(),
             texture_atlas_layout_handle: Handle::default(),
             atlas_texture_handle: Handle::default(),
