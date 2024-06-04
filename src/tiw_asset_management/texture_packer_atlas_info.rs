@@ -61,7 +61,6 @@ impl TexturePackerAtlasInfo {
     pub(crate) fn get_bevy_atlas_index_by_file_name(&self, file_name_needed: &str) -> usize {
         for (index, file_name) in self.file_name_index_mappings.iter() {
             if file_name == file_name_needed {
-                debug!("Found frame name: {}", file_name_needed);
                 return *index;
             }
         }

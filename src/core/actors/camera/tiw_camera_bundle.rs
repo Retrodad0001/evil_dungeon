@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_light_2d::light::AmbientLight2d;
 
 use crate::core::prelude::*;
 
@@ -6,6 +7,7 @@ use crate::core::prelude::*;
 pub(crate) struct TiWCamera2dBundle {
     camera_tag: ComponentCameraTag,
     camera_2d_bundle: Camera2dBundle,
+    ambient_light: AmbientLight2d,
 }
 
 impl TiWCamera2dBundle {
@@ -17,6 +19,10 @@ impl TiWCamera2dBundle {
         Self {
             camera_tag: ComponentCameraTag::new(),
             camera_2d_bundle: camera_bundle,
+            ambient_light: AmbientLight2d {
+                color: Color::WHITE,
+                brightness: 0.1,
+            },
         }
     }
 }

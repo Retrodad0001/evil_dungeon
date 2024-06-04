@@ -8,6 +8,7 @@ use bevy::{
     window::{PresentMode, WindowMode},
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_light_2d::plugin::Light2dPlugin;
 
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
@@ -22,6 +23,7 @@ fn main() {
 
     add_plugins(&mut app);
     add_resources(&mut app);
+    add_type_registrations(&mut app);
     add_events(&mut app);
 
     add_screen_loading_systems(&mut app);
@@ -77,6 +79,10 @@ fn add_plugins(app: &mut App) {
             }),
     );
 
+    app.add_plugins(Light2dPlugin {});
+}
+
+fn add_type_registrations(app: &mut App) {
     app.register_type::<ComponentMovement>();
     app.register_type::<ComponentAnimator>();
     app.register_type::<ComponentActorKind>();
@@ -98,6 +104,7 @@ fn add_resources(app: &mut App) {
 
 fn add_events(app: &mut App) {
     app.add_event::<EventCollisionDetected>();
+    app.add_event::<EventActorIsKilled>();
 }
 
 fn add_screen_loading_systems(_app: &mut App) {}
@@ -120,16 +127,16 @@ fn add_screen_playing_systems(app: &mut App) {
             animate_all,
             calculate_velocity_for_all,
             update_camera_position,
+            handle_health_when_event_collision_for_player,
+            handle_health_when_event_collision_for_enemies,
+            handle_event_actor_is_killed,
         )
             .run_if(in_state(ScreenState::Playing)),
     );
 
     app.add_systems(
         FixedUpdate,
-        (
-            physics_determine_collision_for_all,
-            calculate_ai_next_task_for_enemies,
-        )
+        (physics_determine_collision_for_all, do_fancy_ai_for_enemies)
             .run_if(in_state(ScreenState::Playing)),
     );
 }
@@ -150,6 +157,7 @@ fn add_screen_playing_debug_systems(app: &mut App) {
         Update,
         (
             debug_show_pivot_points,
+            debug_show_collision_bounds,
             enable_disable_debug_console_with_f12,
         )
             .run_if(in_state(ScreenState::Playing)),

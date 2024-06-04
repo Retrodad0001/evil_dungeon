@@ -23,7 +23,8 @@ debug = false
 
 # Use the latest versions for beavy and releated crates until all features needed in stable release
 [dependencies]
-rstest = "0.20.*"
+rstest = "0.21.*"
+bevy_light_2d = "0.1.*"
 bevy = "0.13.*"
 bevy-inspector-egui = "0.24.*"
 iyes_perf_ui = "0.2.*"

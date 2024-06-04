@@ -45,8 +45,8 @@ impl BigZombieBundle {
             },
             movement: ComponentMovement::new(),
             animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving),
-            health: ComponentHealth::new(start_health),
-            collision: ComponentCollision::new(),
+            health: ComponentHealth::new(20),
+            collision: ComponentCollision::new(Vec2::new(0.5, -5.0), 12.0, 15.0),
             damage_dealer: ComponentDealDamage::new(25),
         }
     }

@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_light_2d::light::PointLight2d;
 
 use crate::core::prelude::*;
 
@@ -13,6 +14,7 @@ pub(crate) struct KnightBundle {
     health: ComponentHealth,
     collision: ComponentCollision,
     damage_dealer: ComponentDealDamage,
+    point_light: PointLight2d,
 }
 
 impl KnightBundle {
@@ -47,9 +49,15 @@ impl KnightBundle {
             },
             movement: ComponentMovement::new(),
             animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightIdle),
-            health: ComponentHealth::new(start_health),
-            collision: ComponentCollision::new(),
+            health: ComponentHealth::new(100),
+            collision: ComponentCollision::new(Vec2::new(0.5, -6.0), 12.0, 12.0),
             damage_dealer: ComponentDealDamage::new(10),
+            point_light: PointLight2d {
+                color: Color::WHITE,
+                intensity: 15.0,
+                radius: 130.0,
+                ..Default::default()
+            },
         }
     }
 }

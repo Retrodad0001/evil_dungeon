@@ -50,7 +50,7 @@ pub(crate) fn new_level(
     debug!("start - new_level");
 
     //generate floor map
-    let map_generation_input = MapGenerationInput::new(40, 20, 0);
+    let map_generation_input = MapGenerationInput::new(20, 15, 0);
 
     resource_game_state
         .tiw_tile_map
@@ -123,7 +123,7 @@ pub(crate) fn calculate_direction_for_player(
     player.0.direction = direction.normalize_or_zero();
 }
 
-pub(crate) fn calculate_ai_next_task_for_enemies() {}
+pub(crate) fn do_fancy_ai_for_enemies() {}
 
 pub(crate) fn calculate_direction_for_enemies() {}
 
@@ -176,23 +176,23 @@ pub(crate) fn calculate_velocity_for_all(
 }
 
 pub(crate) fn physics_determine_collision_for_all(
-    collision_entities_query: Query<(Entity, &Name, &Transform, &mut ComponentCollision)>,
+    collision_entities_query: Query<(Entity, &Transform, &mut ComponentCollision)>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,
 ) {
-    for (entity_a, name_a, transform_a, collision_a) in collision_entities_query.iter() {
-        for (entity_b, name_b, transform_b, collision_b) in collision_entities_query.iter() {
+    for (entity_a, transform_a, collision_a) in collision_entities_query.iter() {
+        for (entity_b, transform_b, collision_b) in collision_entities_query.iter() {
             if entity_a == entity_b {
                 continue;
             }
-
-            let entity_a_bounds: Aabb2d = collision_a.get_aabb2d_bounds(transform_a);
-            let entity_b_bounds: Aabb2d = collision_b.get_aabb2d_bounds(transform_b);
+            //TODO add physics layers and check if entities should collide
+            //TODO check on-enter and on-exit collision and only once per collision
+            let entity_a_bounds: Aabb2d = collision_a.get_aabb2d_bounds(&transform_a.translation);
+            let entity_b_bounds: Aabb2d = collision_b.get_aabb2d_bounds(&transform_b.translation);
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                //TODO add event with useful info
-                event_collision_detected.send(EventCollisionDetected());
-                debug!("collision between {:?} and {:?}", name_a, name_b);
+                event_collision_detected.send(EventCollisionDetected::new(entity_a, entity_b));
+                // debug!("collision between {:?} and {:?}", name_a, name_b);
             }
         }
     }
@@ -213,4 +213,37 @@ pub(crate) fn update_camera_position(
         player_transform.translation.y,
         0.0,
     );
+}
+
+pub(crate) fn handle_health_when_event_collision_for_player(
+    mut event_collision_detected: EventReader<EventCollisionDetected>,
+) {
+    for event in event_collision_detected.read() {
+        debug!("handle_health_for_player!");
+        //TODO when player is hit, decrease health
+        //TODO when player health is 0 publish event actor_is_killed
+    }
+}
+
+pub(crate) fn handle_health_when_event_collision_for_enemies(
+    mut event_collision_detected: EventReader<EventCollisionDetected>,
+) {
+    for event in event_collision_detected.read() {
+        debug!("handle_health_for_enemies!");
+
+        //TODO when enemy is hit, decrease health
+        //TODO when enemy health is 0, destroy entity
+        //TODO when enemy is destroyed publish event actor_is_killed
+    }
+}
+
+pub(crate) fn handle_event_actor_is_killed(
+    mut event_actor_is_killed: EventReader<EventActorIsKilled>,
+) {
+    for event in event_actor_is_killed.read() {
+        debug!("Actor is killed! : {:?}", event.actor_type);
+
+        //TODO when actor is killed, destroy entity in world
+        //TODO when actor is killed, play sound
+    }
 }
