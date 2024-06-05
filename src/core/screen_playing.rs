@@ -114,7 +114,7 @@ pub(crate) fn new_level(
 
 pub(crate) fn calculate_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut ComponentMovement, &ComponentPlayerTag)>,
+    mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag)>,
 ) {
     let mut direction: Vec2 = Vec2::new(0.0, 0.0);
 
@@ -131,7 +131,7 @@ pub(crate) fn calculate_direction_for_player(
         direction.y = -1.0;
     }
 
-    let mut player: (Mut<ComponentMovement>, &ComponentPlayerTag) = player_query.single_mut();
+    let mut player: (Mut<ComponentCanMove>, &ComponentPlayerTag) = player_query.single_mut();
 
     //TODO if in that direction is a collider, do not move (test with ray cast)
     let is_blocked_by_collider: bool = false;
@@ -150,8 +150,8 @@ pub(crate) fn calculate_direction_for_enemies() {}
 pub(crate) fn animate_all(
     mut animation_entities_query: Query<(
         &ComponentActorKind,
-        &ComponentMovement,
-        &mut ComponentAnimator,
+        &ComponentCanMove,
+        &mut ComponentCanAnimate,
         &mut TextureAtlas,
         &mut Sprite,
     )>,
@@ -180,7 +180,7 @@ pub(crate) fn animate_all(
 }
 
 pub(crate) fn calculate_velocity_for_all(
-    mut movement_entities_query: Query<(&mut Transform, &mut ComponentMovement)>,
+    mut movement_entities_query: Query<(&mut Transform, &mut ComponentCanMove)>,
     time: Res<Time>,
 ) {
     let delta_time: f32 = time.delta_seconds();
@@ -199,7 +199,7 @@ pub(crate) fn physics_determine_collision_for_all(
     collision_entities_query: Query<(
         Entity,
         &Transform,
-        &mut ComponentCollision,
+        &mut ComponentCanCollide,
         &ComponentActorKind,
     )>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,

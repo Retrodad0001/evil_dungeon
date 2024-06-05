@@ -7,11 +7,11 @@ pub(crate) struct BigZombieBundle {
     name: Name,
     actor_kind: ComponentActorKind,
     sprite_sheet_bundle: SpriteSheetBundle,
-    movement: ComponentMovement,
-    animation: ComponentAnimator,
-    health: ComponentHealth,
-    collision: ComponentCollision,
-    damage_dealer: ComponentDealDamage,
+    movement: ComponentCanMove,
+    animation: ComponentCanAnimate,
+    health: ComponentHasHealth,
+    collision: ComponentCanCollide,
+    damage_dealer: ComponentCanDealDamage,
 }
 
 impl BigZombieBundle {
@@ -43,17 +43,17 @@ impl BigZombieBundle {
                 },
                 ..default()
             },
-            movement: ComponentMovement::new(),
-            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving),
-            health: ComponentHealth::new(start_health),
-            collision: ComponentCollision::new(
+            movement: ComponentCanMove::new(),
+            animation: ComponentCanAnimate::new(ComponentAnimationClipKind::KnightMoving),
+            health: ComponentHasHealth::new(start_health),
+            collision: ComponentCanCollide::new(
                 Vec2::new(0.5, -5.0),
                 12.0,
                 15.0,
                 ComponentActorKind::BigZombie,
                 vec![ComponentActorKind::PlayerKnight],
             ),
-            damage_dealer: ComponentDealDamage::new(25),
+            damage_dealer: ComponentCanDealDamage::new(25),
         }
     }
 }

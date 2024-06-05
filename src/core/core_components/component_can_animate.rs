@@ -4,13 +4,13 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub(crate) struct ComponentAnimator {
+pub(crate) struct ComponentCanAnimate {
     previous_animation_kind: ComponentAnimationClipKind,
     animation_frame_timer_sec: f32,
     current_animation_frame: i32,
 }
 
-impl ComponentAnimator {
+impl ComponentCanAnimate {
     pub(crate) fn new(previous_animation_kind: ComponentAnimationClipKind) -> Self {
         Self {
             previous_animation_kind,

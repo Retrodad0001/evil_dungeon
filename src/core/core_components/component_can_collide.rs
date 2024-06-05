@@ -4,7 +4,7 @@ use crate::ComponentActorKind;
 
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
-pub(crate) struct ComponentCollision {
+pub(crate) struct ComponentCanCollide {
     pub(crate) offset: Vec2,
     pub(crate) bounds_width: f32,
     pub(crate) bounds_height: f32,
@@ -12,7 +12,7 @@ pub(crate) struct ComponentCollision {
     pub(crate) collision_mask: Vec<ComponentActorKind>, //* can also be done central and not with every component to safe memory */
 }
 
-impl ComponentCollision {
+impl ComponentCanCollide {
     pub(crate) fn new(
         offset: Vec2,
         bounds_width: f32,
@@ -32,8 +32,8 @@ impl ComponentCollision {
         &self,
         entity_a: Entity,
         entity_b: Entity,
-        collision_a: &ComponentCollision,
-        collision_b: &ComponentCollision,
+        collision_a: &ComponentCanCollide,
+        collision_b: &ComponentCanCollide,
     ) -> bool {
         if collision_a.collision_mask.is_empty() {
             return true;
@@ -70,7 +70,7 @@ mod tests {
     fn test_get_aabb2d_bounds_with_no_offset() {
         let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(0.0, 0.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(
+        let component_collision: ComponentCanCollide = ComponentCanCollide::new(
             offset,
             10.0,
             10.0,
@@ -88,7 +88,7 @@ mod tests {
     fn test_get_aabb2d_bounds_with_positive_offset() {
         let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(1.0, 1.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(
+        let component_collision: ComponentCanCollide = ComponentCanCollide::new(
             offset,
             10.0,
             10.0,
@@ -106,7 +106,7 @@ mod tests {
     fn test_get_aabb2d_bounds_with_negative_offset() {
         let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(-1.0, -1.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(
+        let component_collision: ComponentCanCollide = ComponentCanCollide::new(
             offset,
             10.0,
             10.0,

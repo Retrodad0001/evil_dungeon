@@ -7,7 +7,7 @@ pub(crate) struct WallBundle {
     name: Name,
     sprite_sheet_bundle: SpriteSheetBundle,
     actor_kind: ComponentActorKind,
-    collision: ComponentCollision,
+    collision: ComponentCanCollide,
 }
 
 impl WallBundle {
@@ -38,7 +38,7 @@ impl WallBundle {
                 ..default()
             },
             actor_kind: ComponentActorKind::Wall,
-            collision: ComponentCollision::new(
+            collision: ComponentCanCollide::new(
                 Vec2::new(8.0, -8.0),
                 16.0,
                 16.0,

@@ -22,14 +22,14 @@ pub(crate) fn debug_show_pivot_points(
 pub(crate) fn debug_show_collision_bounds(
     debug_settings: Res<ResourceDebugSettings>,
     query_all_entities: Query<
-        (&Name, &Transform, &ComponentCollision),
+        (&Name, &Transform, &ComponentCanCollide),
         (Without<ComponentCameraTag>,),
     >,
     mut gizmos: Gizmos,
 ) {
     if debug_settings.show_debug_info {
         query_all_entities.into_iter().for_each(
-            |(_name, transform, component_collision): (&Name, &Transform, &ComponentCollision)| {
+            |(_name, transform, component_collision): (&Name, &Transform, &ComponentCanCollide)| {
                 let position: Vec2 = Vec2::new(transform.translation.x, transform.translation.y)
                     + component_collision.offset;
                 let size = Vec2::new(

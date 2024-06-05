@@ -9,11 +9,11 @@ pub(crate) struct KnightBundle {
     player_tag: ComponentPlayerTag,
     actor_kind: ComponentActorKind,
     sprite_sheet_bundle: SpriteSheetBundle,
-    movement: ComponentMovement,
-    animation: ComponentAnimator,
-    health: ComponentHealth,
-    collision: ComponentCollision,
-    damage_dealer: ComponentDealDamage,
+    movement: ComponentCanMove,
+    animation: ComponentCanAnimate,
+    health: ComponentHasHealth,
+    collision: ComponentCanCollide,
+    damage_dealer: ComponentCanDealDamage,
     point_light: PointLight2d,
 }
 
@@ -47,20 +47,20 @@ impl KnightBundle {
                 },
                 ..default()
             },
-            movement: ComponentMovement::new(),
-            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightIdle),
-            health: ComponentHealth::new(start_health),
-            collision: ComponentCollision::new(
+            movement: ComponentCanMove::new(),
+            animation: ComponentCanAnimate::new(ComponentAnimationClipKind::KnightIdle),
+            health: ComponentHasHealth::new(start_health),
+            collision: ComponentCanCollide::new(
                 Vec2::new(0.5, -6.0),
                 12.0,
                 12.0,
                 ComponentActorKind::PlayerKnight,
                 vec![ComponentActorKind::Wall, ComponentActorKind::BigZombie],
             ),
-            damage_dealer: ComponentDealDamage::new(10),
+            damage_dealer: ComponentCanDealDamage::new(10),
             point_light: PointLight2d {
                 color: Color::WHITE,
-                intensity: 15.0,
+                intensity: 80.0,
                 radius: 130.0,
                 ..Default::default()
             },

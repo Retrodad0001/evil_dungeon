@@ -2,11 +2,11 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
-pub(crate) struct ComponentHealth {
+pub(crate) struct ComponentHasHealth {
     pub(crate) current_health: i32,
 }
 
-impl ComponentHealth {
+impl ComponentHasHealth {
     pub(crate) fn new(current_health: i32) -> Self {
         debug_assert!(
             current_health > 0,

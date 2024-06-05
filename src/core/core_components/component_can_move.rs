@@ -3,13 +3,13 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub(crate) struct ComponentMovement {
+pub(crate) struct ComponentCanMove {
     pub(crate) direction: Vec2,
     pub(crate) current_velocity: Vec2,
     max_speed: f32,
 }
 
-impl ComponentMovement {
+impl ComponentCanMove {
     pub(crate) fn new() -> Self {
         Self {
             max_speed: 80.0,

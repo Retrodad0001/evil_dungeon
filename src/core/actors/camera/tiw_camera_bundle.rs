@@ -21,7 +21,7 @@ impl TiWCamera2dBundle {
             camera_2d_bundle: camera_bundle,
             ambient_light: AmbientLight2d {
                 color: Color::WHITE,
-                brightness: 0.1,
+                brightness: 0.005,
             },
         }
     }
