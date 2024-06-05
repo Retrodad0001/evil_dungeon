@@ -71,6 +71,6 @@ impl TiwTileMap {
             .get(x as usize)
             .unwrap();
 
-        result.clone()
+        *result
     }
 }

@@ -182,9 +182,9 @@ pub(crate) fn calculate_velocity_for_player(
 ) {
     let delta_time: f32 = time.delta_seconds();
 
-    let mut player = movement_player.single_mut();
+    let mut player: (Mut<Transform>, Mut<ComponentCanMove>) = movement_player.single_mut();
 
-    let old_location = Vec3::new(player.0.translation.x, player.0.translation.y, 0.0);
+    let previous_location: Vec3 = Vec3::new(player.0.translation.x, player.0.translation.y, 0.0);
 
     player.1.calculate_velocity(&delta_time);
     let potential_new_location = player.0.translation
@@ -200,7 +200,7 @@ pub(crate) fn calculate_velocity_for_player(
     //TODO fix the magic number
 
     if is_blocking_tile {
-        player.0.translation = old_location;
+        player.0.translation = previous_location;
         debug!("player is blocked by wall");
     } else {
         player.0.translation = potential_new_location;
