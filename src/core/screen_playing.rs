@@ -114,7 +114,7 @@ pub(crate) fn new_level(
 
 pub(crate) fn calculate_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &Transform)>,
+    mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &mut Transform)>,
 ) {
     let mut direction_vector: Vec2 = Vec2::new(0.0, 0.0);
 
@@ -131,16 +131,11 @@ pub(crate) fn calculate_direction_for_player(
         direction_vector.y = -1.0;
     }
 
-    direction_vector = direction_vector.normalize_or_zero();
-
-    let mut player: (Mut<ComponentCanMove>, &ComponentPlayerTag, &Transform) =
+    let mut player: (Mut<ComponentCanMove>, &ComponentPlayerTag, Mut<Transform>) =
         player_query.single_mut();
 
-    if player.0.is_blocked {
-        player.0.direction = Vec2::ZERO;
-    } else {
-        player.0.direction = direction_vector;
-    }
+    direction_vector = direction_vector.normalize_or_zero();
+    player.0.direction = direction_vector;
 }
 
 pub(crate) fn do_fancy_ai_for_enemies() {}
@@ -218,15 +213,12 @@ pub(crate) fn physics_determine_collision_for_all(
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                //   collision_a.is_colliding = true;
-
                 event_collision_detected.send(EventCollisionDetected::new(
-                    entity_a,
-                    entity_b,
                     *actor_kind_a,
                     *actor_kind_b,
                 ));
-                // debug!("collision between {:?} and {:?}", name_a, name_b);
+
+                //* debug!("collision between {:?} and {:?}", name_a, name_b);
             }
         }
     }
@@ -256,7 +248,6 @@ pub(crate) fn check_if_player_blocked(
 }
 pub(crate) fn handle_health_when_event_collision_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
-    mut event_Actor_is_killed: EventWriter<EventActorIsKilled>,
 ) {
     for collision_event in event_collision_detected.read() {
         info!(

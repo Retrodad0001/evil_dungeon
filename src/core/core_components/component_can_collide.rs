@@ -10,7 +10,6 @@ pub(crate) struct ComponentCanCollide {
     pub(crate) bounds_height: f32,
     pub(crate) actor_kind: ComponentActorKind,
     pub(crate) collision_mask: Vec<ComponentActorKind>,
-    pub(crate) is_colliding: bool,
 }
 
 impl ComponentCanCollide {
@@ -27,7 +26,6 @@ impl ComponentCanCollide {
             bounds_height,
             actor_kind,
             collision_mask,
-            is_colliding: false,
         }
     }
 
@@ -38,9 +36,7 @@ impl ComponentCanCollide {
         collision_a: &ComponentCanCollide,
         collision_b: &ComponentCanCollide,
     ) -> bool {
-        if collision_a.is_colliding {
-            return true;
-        }
+       
 
         if collision_a.collision_mask.is_empty() {
             return true;

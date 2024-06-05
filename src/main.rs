@@ -126,7 +126,6 @@ fn add_screen_playing_systems(app: &mut App) {
             calculate_direction_for_player,
             calculate_direction_for_enemies,
             animate_all,
-            calculate_velocity_for_all,
             update_camera_position,
             handle_health_when_event_collision_for_all,
             handle_event_actor_is_killed,
@@ -136,7 +135,11 @@ fn add_screen_playing_systems(app: &mut App) {
 
     app.add_systems(
         FixedUpdate,
-        (physics_determine_collision_for_all, check_if_player_blocked)
+        (
+            physics_determine_collision_for_all,
+            check_if_player_blocked,
+            calculate_velocity_for_all,
+        )
             .chain()
             .run_if(in_state(ScreenState::Playing)),
     );
