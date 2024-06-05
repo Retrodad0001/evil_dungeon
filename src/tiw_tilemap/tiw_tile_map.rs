@@ -36,15 +36,15 @@ impl TiwTileMap {
         }
 
         //* temp: generate walls for testing collision
-        // new_floor_map[0][0] = TileType::MidWall;
-        // new_floor_map[0][1] = TileType::MidWall;
+        new_floor_map[0][0] = TileType::MidWall;
+        new_floor_map[0][1] = TileType::MidWall;
         new_floor_map[0][2] = TileType::MidWall;
-        // new_floor_map[0][3] = TileType::MidWall;
-        // new_floor_map[0][4] = TileType::MidWall;
-        // new_floor_map[3][3] = TileType::MidWall;
-        // new_floor_map[3][4] = TileType::MidWall;
+        new_floor_map[0][3] = TileType::MidWall;
+        new_floor_map[0][4] = TileType::MidWall;
+        new_floor_map[3][3] = TileType::MidWall;
+        new_floor_map[3][4] = TileType::MidWall;
         new_floor_map[3][5] = TileType::MidWall;
-        // new_floor_map[5][5] = TileType::MidWall;
+        new_floor_map[5][5] = TileType::MidWall;
         new_floor_map[6][7] = TileType::MidWall;
 
         self.floor_level = new_floor_map;

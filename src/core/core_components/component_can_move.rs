@@ -4,6 +4,7 @@ use bevy::prelude::*;
 #[derive(Component, Reflect, Resource, Default)]
 #[reflect(Resource)]
 pub(crate) struct ComponentCanMove {
+    pub(crate) is_blocked: bool,
     pub(crate) direction: Vec2,
     pub(crate) current_velocity: Vec2,
     max_speed: f32,
@@ -12,6 +13,7 @@ pub(crate) struct ComponentCanMove {
 impl ComponentCanMove {
     pub(crate) fn new() -> Self {
         Self {
+            is_blocked: false,
             max_speed: 80.0,
             direction: Vec2::new(0.0, 0.0),
             current_velocity: Vec2::new(0.0, 0.0),

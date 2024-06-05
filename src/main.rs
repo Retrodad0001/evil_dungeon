@@ -122,6 +122,7 @@ fn add_screen_playing_systems(app: &mut App) {
     app.add_systems(
         Update,
         (
+            do_fancy_ai_for_enemies,
             calculate_direction_for_player,
             calculate_direction_for_enemies,
             animate_all,
@@ -135,7 +136,8 @@ fn add_screen_playing_systems(app: &mut App) {
 
     app.add_systems(
         FixedUpdate,
-        (physics_determine_collision_for_all, do_fancy_ai_for_enemies)
+        (physics_determine_collision_for_all, check_if_player_blocked)
+            .chain()
             .run_if(in_state(ScreenState::Playing)),
     );
 }

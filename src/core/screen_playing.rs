@@ -114,32 +114,32 @@ pub(crate) fn new_level(
 
 pub(crate) fn calculate_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag)>,
+    mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &Transform)>,
 ) {
-    let mut direction: Vec2 = Vec2::new(0.0, 0.0);
+    let mut direction_vector: Vec2 = Vec2::new(0.0, 0.0);
 
     if keyboard_input.pressed(KeyCode::KeyA) || keyboard_input.pressed(KeyCode::ArrowLeft) {
-        direction.x = -1.0;
+        direction_vector.x = -1.0;
     }
     if keyboard_input.pressed(KeyCode::KeyD) || keyboard_input.pressed(KeyCode::ArrowRight) {
-        direction.x = 1.0;
+        direction_vector.x = 1.0;
     }
     if keyboard_input.pressed(KeyCode::KeyW) || keyboard_input.pressed(KeyCode::ArrowUp) {
-        direction.y = 1.0;
+        direction_vector.y = 1.0;
     }
     if keyboard_input.pressed(KeyCode::KeyS) || keyboard_input.pressed(KeyCode::ArrowDown) {
-        direction.y = -1.0;
+        direction_vector.y = -1.0;
     }
 
-    let mut player: (Mut<ComponentCanMove>, &ComponentPlayerTag) = player_query.single_mut();
+    direction_vector = direction_vector.normalize_or_zero();
 
-    //TODO if in that direction is a collider, do not move (test with ray cast)
-    let is_blocked_by_collider: bool = false;
+    let mut player: (Mut<ComponentCanMove>, &ComponentPlayerTag, &Transform) =
+        player_query.single_mut();
 
-    if is_blocked_by_collider {
-        player.0.direction = Vec2::ZERO
+    if player.0.is_blocked {
+        player.0.direction = Vec2::ZERO;
     } else {
-        player.0.direction = direction.normalize_or_zero();
+        player.0.direction = direction_vector;
     }
 }
 
@@ -199,7 +199,7 @@ pub(crate) fn physics_determine_collision_for_all(
     collision_entities_query: Query<(
         Entity,
         &Transform,
-        &mut ComponentCanCollide,
+        &ComponentCanCollide,
         &ComponentActorKind,
     )>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,
@@ -218,6 +218,8 @@ pub(crate) fn physics_determine_collision_for_all(
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
+                //   collision_a.is_colliding = true;
+
                 event_collision_detected.send(EventCollisionDetected::new(
                     entity_a,
                     entity_b,
@@ -230,6 +232,28 @@ pub(crate) fn physics_determine_collision_for_all(
     }
 }
 
+pub(crate) fn check_if_player_blocked(
+    mut player_query: Query<
+        (&Transform, &ComponentCanCollide, &mut ComponentCanMove),
+        With<ComponentPlayerTag>,
+    >,
+    mut event_collision_detected: EventReader<EventCollisionDetected>,
+) {
+    let mut player = player_query.single_mut();
+
+    for collision_event in event_collision_detected.read() {
+        if collision_event.entity_a_actor_kind == ComponentActorKind::PlayerKnight {
+            match collision_event.entity_b_actor_kind {
+                ComponentActorKind::Wall => {
+                    player.2.is_blocked = true;
+                }
+                _ => {
+                    //* ignore, only walls */
+                }
+            }
+        }
+    }
+}
 pub(crate) fn handle_health_when_event_collision_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
     mut event_Actor_is_killed: EventWriter<EventActorIsKilled>,
