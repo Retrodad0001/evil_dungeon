@@ -49,4 +49,28 @@ impl TiwTileMap {
 
         self.floor_level = new_floor_map;
     }
+
+    pub(crate) fn is_blocking_tile_at_location(&self, x: f32, y: f32, tile_wh: i32) -> bool {
+        match self.get_tile_type_at_location(x, y, tile_wh) {
+            TileType::MidWall => true,
+            TileType::Floor0 => false,
+        }
+    }
+
+    pub(crate) fn get_tile_type_at_location(&self, x: f32, y: f32, tile_wh: i32) -> TileType {
+        let x = x as u32;
+        let y = y as u32;
+
+        let x = x / tile_wh as u32;
+        let y = y / tile_wh as u32;
+
+        let result: &TileType = self
+            .floor_level
+            .get(y as usize)
+            .unwrap()
+            .get(x as usize)
+            .unwrap();
+
+        result.clone()
+    }
 }

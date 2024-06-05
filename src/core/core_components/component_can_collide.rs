@@ -36,8 +36,6 @@ impl ComponentCanCollide {
         collision_a: &ComponentCanCollide,
         collision_b: &ComponentCanCollide,
     ) -> bool {
-       
-
         if collision_a.collision_mask.is_empty() {
             return true;
         }

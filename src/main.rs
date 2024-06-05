@@ -137,8 +137,8 @@ fn add_screen_playing_systems(app: &mut App) {
         FixedUpdate,
         (
             physics_determine_collision_for_all,
-            check_if_player_blocked,
-            calculate_velocity_for_all,
+            calculate_velocity_for_player,
+            calculate_velocity_for_enemies,
         )
             .chain()
             .run_if(in_state(ScreenState::Playing)),

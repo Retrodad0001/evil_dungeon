@@ -3,6 +3,7 @@ use crate::tiw_asset_management::prelude::*;
 use crate::tiw_tilemap::prelude::MapGenerationInput;
 use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use bevy::prelude::*;
+use bevy::scene::ron::de;
 
 use super::events::prelude::EventCollisionDetected;
 use super::resource_general_game_state;
@@ -174,8 +175,43 @@ pub(crate) fn animate_all(
     }
 }
 
-pub(crate) fn calculate_velocity_for_all(
-    mut movement_entities_query: Query<(&mut Transform, &mut ComponentCanMove)>,
+pub(crate) fn calculate_velocity_for_player(
+    mut movement_player: Query<(&mut Transform, &mut ComponentCanMove), With<ComponentPlayerTag>>,
+    time: Res<Time>,
+    resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
+) {
+    let delta_time: f32 = time.delta_seconds();
+
+    let mut player = movement_player.single_mut();
+
+    let old_location = Vec3::new(player.0.translation.x, player.0.translation.y, 0.0);
+
+    player.1.calculate_velocity(&delta_time);
+    let potential_new_location = player.0.translation
+        + Vec3::new(
+            player.1.current_velocity.x,
+            player.1.current_velocity.y,
+            0.0,
+        );
+
+    let is_blocking_tile: bool = resource_game_state
+        .tiw_tile_map
+        .is_blocking_tile_at_location(potential_new_location.x, potential_new_location.y, 16);
+    //TODO fix the magic number
+
+    if is_blocking_tile {
+        player.0.translation = old_location;
+        debug!("player is blocked by wall");
+    } else {
+        player.0.translation = potential_new_location;
+    }
+}
+
+pub(crate) fn calculate_velocity_for_enemies(
+    mut movement_entities_query: Query<
+        (&mut Transform, &mut ComponentCanMove),
+        Without<ComponentPlayerTag>,
+    >,
     time: Res<Time>,
 ) {
     let delta_time: f32 = time.delta_seconds();
@@ -213,10 +249,8 @@ pub(crate) fn physics_determine_collision_for_all(
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                event_collision_detected.send(EventCollisionDetected::new(
-                    *actor_kind_a,
-                    *actor_kind_b,
-                ));
+                event_collision_detected
+                    .send(EventCollisionDetected::new(*actor_kind_a, *actor_kind_b));
 
                 //* debug!("collision between {:?} and {:?}", name_a, name_b);
             }
@@ -224,28 +258,6 @@ pub(crate) fn physics_determine_collision_for_all(
     }
 }
 
-pub(crate) fn check_if_player_blocked(
-    mut player_query: Query<
-        (&Transform, &ComponentCanCollide, &mut ComponentCanMove),
-        With<ComponentPlayerTag>,
-    >,
-    mut event_collision_detected: EventReader<EventCollisionDetected>,
-) {
-    let mut player = player_query.single_mut();
-
-    for collision_event in event_collision_detected.read() {
-        if collision_event.entity_a_actor_kind == ComponentActorKind::PlayerKnight {
-            match collision_event.entity_b_actor_kind {
-                ComponentActorKind::Wall => {
-                    player.2.is_blocked = true;
-                }
-                _ => {
-                    //* ignore, only walls */
-                }
-            }
-        }
-    }
-}
 pub(crate) fn handle_health_when_event_collision_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
 ) {
