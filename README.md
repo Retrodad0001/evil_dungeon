@@ -5,5 +5,6 @@ I created this game to learn more about the Bevy Engine and the Rust language. M
 
 Latest version screenshot..
 
-![image](https://github.com/Retrodad0001/evil_dungeon/assets/9283221/a36f5f1a-4a33-46eb-9043-723d99abefb1)
+
+![image](https://github.com/Retrodad0001/evil_dungeon/assets/9283221/30428583-2784-404e-8572-780220d91ecb)
 
