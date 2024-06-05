@@ -23,12 +23,12 @@ impl KnightBundle {
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
         index: usize,
         spawn_position: Vec2,
-        start_health: u32,
+        start_health: i32,
     ) -> Self {
         Self {
             name: Name::new("Knight (player)"),
             player_tag: ComponentPlayerTag::new(),
-            actor_kind: ComponentActorKind::Knight,
+            actor_kind: ComponentActorKind::PlayerKnight,
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture: atlas_texture_handle,
                 atlas: TextureAtlas {
@@ -49,8 +49,14 @@ impl KnightBundle {
             },
             movement: ComponentMovement::new(),
             animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightIdle),
-            health: ComponentHealth::new(100),
-            collision: ComponentCollision::new(Vec2::new(0.5, -6.0), 12.0, 12.0),
+            health: ComponentHealth::new(start_health),
+            collision: ComponentCollision::new(
+                Vec2::new(0.5, -6.0),
+                12.0,
+                12.0,
+                ComponentActorKind::PlayerKnight,
+                vec![ComponentActorKind::Wall, ComponentActorKind::BigZombie],
+            ),
             damage_dealer: ComponentDealDamage::new(10),
             point_light: PointLight2d {
                 color: Color::WHITE,

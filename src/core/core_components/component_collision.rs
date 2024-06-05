@@ -1,20 +1,54 @@
 use bevy::{math::bounding::Aabb2d, prelude::*};
 
+use crate::ComponentActorKind;
+
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
 pub(crate) struct ComponentCollision {
     pub(crate) offset: Vec2,
     pub(crate) bounds_width: f32,
     pub(crate) bounds_height: f32,
+    pub(crate) actor_kind: ComponentActorKind,
+    pub(crate) collision_mask: Vec<ComponentActorKind>, //* can also be done central and not with every component to safe memory */
 }
 
 impl ComponentCollision {
-    pub(crate) fn new(offset: Vec2, bounds_width: f32, bounds_height: f32) -> Self {
+    pub(crate) fn new(
+        offset: Vec2,
+        bounds_width: f32,
+        bounds_height: f32,
+        actor_kind: ComponentActorKind,
+        collision_mask: Vec<ComponentActorKind>,
+    ) -> Self {
         Self {
             offset,
             bounds_width,
             bounds_height,
+            actor_kind,
+            collision_mask,
         }
+    }
+    pub(crate) fn should_ignore_collision_processing(
+        &self,
+        entity_a: Entity,
+        entity_b: Entity,
+        collision_a: &ComponentCollision,
+        collision_b: &ComponentCollision,
+    ) -> bool {
+        if collision_a.collision_mask.is_empty() {
+            return true;
+        }
+
+        if !collision_a.collision_mask.contains(&collision_b.actor_kind) {
+            return true;
+        }
+
+        //* make sure that the entity is not checking itself */
+        if entity_a.to_bits() == entity_b.to_bits() {
+            return true;
+        }
+
+        false
     }
 
     pub(crate) fn get_aabb2d_bounds(&self, translation: &Vec3) -> Aabb2d {
@@ -34,8 +68,15 @@ mod tests {
 
     #[test]
     fn test_get_aabb2d_bounds_with_no_offset() {
+        let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(0.0, 0.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(offset, 10.0, 10.0);
+        let component_collision: ComponentCollision = ComponentCollision::new(
+            offset,
+            10.0,
+            10.0,
+            ComponentActorKind::PlayerKnight,
+            collision_mask,
+        );
         let translation: Vec3 = Vec3::new(10.0, 20.0, 0.0);
         let aabb2d: Aabb2d = component_collision.get_aabb2d_bounds(&translation);
 
@@ -45,8 +86,15 @@ mod tests {
 
     #[test]
     fn test_get_aabb2d_bounds_with_positive_offset() {
+        let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(1.0, 1.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(offset, 10.0, 10.0);
+        let component_collision: ComponentCollision = ComponentCollision::new(
+            offset,
+            10.0,
+            10.0,
+            ComponentActorKind::PlayerKnight,
+            collision_mask,
+        );
         let translation: Vec3 = Vec3::new(10.0, 20.0, 0.0);
         let aabb2d: Aabb2d = component_collision.get_aabb2d_bounds(&translation);
 
@@ -56,8 +104,15 @@ mod tests {
 
     #[test]
     fn test_get_aabb2d_bounds_with_negative_offset() {
+        let collision_mask: Vec<ComponentActorKind> = Vec::new();
         let offset: Vec2 = Vec2::new(-1.0, -1.0);
-        let component_collision: ComponentCollision = ComponentCollision::new(offset, 10.0, 10.0);
+        let component_collision: ComponentCollision = ComponentCollision::new(
+            offset,
+            10.0,
+            10.0,
+            ComponentActorKind::PlayerKnight,
+            collision_mask,
+        );
         let translation: Vec3 = Vec3::new(10.0, 20.0, 0.0);
         let aabb2d: Aabb2d = component_collision.get_aabb2d_bounds(&translation);
 

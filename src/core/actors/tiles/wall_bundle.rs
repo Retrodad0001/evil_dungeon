@@ -3,28 +3,22 @@ use bevy::prelude::*;
 use crate::core::prelude::*;
 
 #[derive(Bundle)]
-pub(crate) struct BigZombieBundle {
+pub(crate) struct WallBundle {
     name: Name,
-    actor_kind: ComponentActorKind,
     sprite_sheet_bundle: SpriteSheetBundle,
-    movement: ComponentMovement,
-    animation: ComponentAnimator,
-    health: ComponentHealth,
+    actor_kind: ComponentActorKind,
     collision: ComponentCollision,
-    damage_dealer: ComponentDealDamage,
 }
 
-impl BigZombieBundle {
+impl WallBundle {
     pub fn new(
         atlas_texture_handle: Handle<Image>,
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
         index: usize,
         spawn_position: Vec2,
-        start_health: i32,
     ) -> Self {
         Self {
-            name: Name::new("Big Zombie"),
-            actor_kind: ComponentActorKind::BigZombie,
+            name: Name::new("Wall"),
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture: atlas_texture_handle,
                 atlas: TextureAtlas {
@@ -34,26 +28,23 @@ impl BigZombieBundle {
                 transform: Transform::from_translation(Vec3::new(
                     spawn_position.x,
                     spawn_position.y,
-                    DRAW_INDEX_Z_PLAYER_ENEMIES,
+                    DRAW_INDEX_Z_TILEMAP_FLOOR,
                 )),
                 sprite: Sprite {
-                    anchor: bevy::sprite::Anchor::Center,
+                    anchor: bevy::sprite::Anchor::TopLeft,
                     flip_x: false,
                     ..Default::default()
                 },
                 ..default()
             },
-            movement: ComponentMovement::new(),
-            animation: ComponentAnimator::new(ComponentAnimationClipKind::KnightMoving),
-            health: ComponentHealth::new(start_health),
+            actor_kind: ComponentActorKind::Wall,
             collision: ComponentCollision::new(
-                Vec2::new(0.5, -5.0),
-                12.0,
-                15.0,
-                ComponentActorKind::BigZombie,
-                vec![ComponentActorKind::PlayerKnight],
+                Vec2::new(8.0, -8.0),
+                16.0,
+                16.0,
+                ComponentActorKind::Wall,
+                Vec::new(),
             ),
-            damage_dealer: ComponentDealDamage::new(25),
         }
     }
 }

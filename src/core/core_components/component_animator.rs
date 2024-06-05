@@ -79,7 +79,7 @@ impl ComponentAnimator {
         let actor_is_moving: bool = direction.length() > 0.0;
 
         match actor_kind {
-            ComponentActorKind::Knight => {
+            ComponentActorKind::PlayerKnight => {
                 if actor_is_moving {
                     Some(ComponentAnimationClipKind::KnightMoving)
                 } else {

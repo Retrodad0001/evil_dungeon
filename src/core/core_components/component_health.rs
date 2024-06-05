@@ -1,4 +1,4 @@
-use bevy::{prelude::*, scene::ron::de};
+use bevy::prelude::*;
 
 #[derive(Component, Reflect, Resource, Default, Debug)]
 #[reflect(Resource)]
@@ -15,14 +15,4 @@ impl ComponentHealth {
 
         Self { current_health }
     }
-
-    pub(crate) fn take_damage(&mut self, damage_amount: i32) {
-        self.current_health -= damage_amount;
-    }
-
-    pub(crate) fn is_dead(&self) -> bool {
-        self.current_health <= 0
-    }
 }
-
-//TODO show health on screen and update this stuff

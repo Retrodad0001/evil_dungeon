@@ -127,8 +127,7 @@ fn add_screen_playing_systems(app: &mut App) {
             animate_all,
             calculate_velocity_for_all,
             update_camera_position,
-            handle_health_when_event_collision_for_player,
-            handle_health_when_event_collision_for_enemies,
+            handle_health_when_event_collision_for_all,
             handle_event_actor_is_killed,
         )
             .run_if(in_state(ScreenState::Playing)),

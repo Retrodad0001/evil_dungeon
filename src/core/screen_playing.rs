@@ -50,27 +50,40 @@ pub(crate) fn new_level(
     debug!("start - new_level");
 
     //generate floor map
-    let map_generation_input = MapGenerationInput::new(20, 15, 0);
+    let map_generation_input = MapGenerationInput::new(20, 15);
 
     resource_game_state
         .tiw_tile_map
-        .generate_floor_map(map_generation_input);
+        .generate_level(map_generation_input);
 
     const TILE_SIZE_XY: f32 = 16.0;
-    const TILE_FLOOR: u32 = 0;
 
     for y in 0..resource_game_state.tiw_tile_map.map_height {
         for x in 0..resource_game_state.tiw_tile_map.map_width {
-            let tile: u32 = resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
-            if tile == TILE_FLOOR {
-                let atlas_index_floor: usize =
-                    atlas_info.get_bevy_atlas_index_by_file_name(FLOOR_0);
-                commands.spawn(FloorBundle::new(
-                    atlas_info.atlas_texture_handle.clone(),
-                    atlas_info.texture_atlas_layout_handle.clone(),
-                    atlas_index_floor,
-                    Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
-                ));
+            let tile: TileType =
+                resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
+
+            match tile {
+                TileType::Floor0 => {
+                    let atlas_index_floor: usize =
+                        atlas_info.get_bevy_atlas_index_by_file_name(FLOOR_0);
+                    commands.spawn(FloorBundle::new(
+                        atlas_info.atlas_texture_handle.clone(),
+                        atlas_info.texture_atlas_layout_handle.clone(),
+                        atlas_index_floor,
+                        Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
+                    ));
+                }
+                TileType::MidWall => {
+                    let atlas_index_wall: usize =
+                        atlas_info.get_bevy_atlas_index_by_file_name(WALL_MID);
+                    commands.spawn(WallBundle::new(
+                        atlas_info.atlas_texture_handle.clone(),
+                        atlas_info.texture_atlas_layout_handle.clone(),
+                        atlas_index_wall,
+                        Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
+                    ));
+                }
             }
         }
     }
@@ -81,7 +94,7 @@ pub(crate) fn new_level(
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_knight_idle,
-        Vec2::new(8.0, 8.0),
+        Vec2::new(200.0, 200.0),
         100,
     ));
 
@@ -120,7 +133,14 @@ pub(crate) fn calculate_direction_for_player(
 
     let mut player: (Mut<ComponentMovement>, &ComponentPlayerTag) = player_query.single_mut();
 
-    player.0.direction = direction.normalize_or_zero();
+    //TODO if in that direction is a collider, do not move (test with ray cast)
+    let is_blocked_by_collider: bool = false;
+
+    if is_blocked_by_collider {
+        player.0.direction = Vec2::ZERO
+    } else {
+        player.0.direction = direction.normalize_or_zero();
+    }
 }
 
 pub(crate) fn do_fancy_ai_for_enemies() {}
@@ -176,23 +196,72 @@ pub(crate) fn calculate_velocity_for_all(
 }
 
 pub(crate) fn physics_determine_collision_for_all(
-    collision_entities_query: Query<(Entity, &Transform, &mut ComponentCollision)>,
+    collision_entities_query: Query<(
+        Entity,
+        &Transform,
+        &mut ComponentCollision,
+        &ComponentActorKind,
+    )>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,
 ) {
-    for (entity_a, transform_a, collision_a) in collision_entities_query.iter() {
-        for (entity_b, transform_b, collision_b) in collision_entities_query.iter() {
-            if entity_a == entity_b {
+    for (entity_a, transform_a, collision_a, actor_kind_a) in collision_entities_query.iter() {
+        for (entity_b, transform_b, collision_b, actor_kind_b) in collision_entities_query.iter() {
+            let should_ignore_collision_processing: bool = collision_a
+                .should_ignore_collision_processing(entity_a, entity_b, collision_a, collision_b);
+
+            if should_ignore_collision_processing {
                 continue;
             }
-            //TODO add physics layers and check if entities should collide
-            //TODO check on-enter and on-exit collision and only once per collision
+
             let entity_a_bounds: Aabb2d = collision_a.get_aabb2d_bounds(&transform_a.translation);
             let entity_b_bounds: Aabb2d = collision_b.get_aabb2d_bounds(&transform_b.translation);
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                event_collision_detected.send(EventCollisionDetected::new(entity_a, entity_b));
+                event_collision_detected.send(EventCollisionDetected::new(
+                    entity_a,
+                    entity_b,
+                    *actor_kind_a,
+                    *actor_kind_b,
+                ));
                 // debug!("collision between {:?} and {:?}", name_a, name_b);
+            }
+        }
+    }
+}
+
+pub(crate) fn handle_health_when_event_collision_for_all(
+    mut event_collision_detected: EventReader<EventCollisionDetected>,
+    mut event_Actor_is_killed: EventWriter<EventActorIsKilled>,
+) {
+    for collision_event in event_collision_detected.read() {
+        info!(
+            "handle_health for actor: {:?}",
+            collision_event.entity_a_actor_kind
+        );
+
+        //TODO check if other entity has health
+        //TODO if so than apply damage
+        //TODO check if dead and send event
+    }
+}
+
+pub(crate) fn handle_event_actor_is_killed(
+    mut event_actor_is_killed: EventReader<EventActorIsKilled>,
+) {
+    for event in event_actor_is_killed.read() {
+        debug!("Actor is killed! : {:?}", event.actor_type);
+
+        match event.actor_type {
+            ComponentActorKind::PlayerKnight => {
+                //TODO game over or something
+            }
+            ComponentActorKind::BigZombie => {
+                //TODO update score -> create system for updating ui
+                //TODO when actor is killed, destroy entity in world
+            }
+            ComponentActorKind::Wall => {
+                //* ignore, walls cannot be destroyed */
             }
         }
     }
@@ -213,37 +282,4 @@ pub(crate) fn update_camera_position(
         player_transform.translation.y,
         0.0,
     );
-}
-
-pub(crate) fn handle_health_when_event_collision_for_player(
-    mut event_collision_detected: EventReader<EventCollisionDetected>,
-) {
-    for event in event_collision_detected.read() {
-        debug!("handle_health_for_player!");
-        //TODO when player is hit, decrease health
-        //TODO when player health is 0 publish event actor_is_killed
-    }
-}
-
-pub(crate) fn handle_health_when_event_collision_for_enemies(
-    mut event_collision_detected: EventReader<EventCollisionDetected>,
-) {
-    for event in event_collision_detected.read() {
-        debug!("handle_health_for_enemies!");
-
-        //TODO when enemy is hit, decrease health
-        //TODO when enemy health is 0, destroy entity
-        //TODO when enemy is destroyed publish event actor_is_killed
-    }
-}
-
-pub(crate) fn handle_event_actor_is_killed(
-    mut event_actor_is_killed: EventReader<EventActorIsKilled>,
-) {
-    for event in event_actor_is_killed.read() {
-        debug!("Actor is killed! : {:?}", event.actor_type);
-
-        //TODO when actor is killed, destroy entity in world
-        //TODO when actor is killed, play sound
-    }
 }

@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
+#[derive(Component, Reflect, Resource, Default, Debug, PartialEq, Clone, Copy)]
 #[reflect(Resource)]
 pub(crate) enum ComponentActorKind {
     #[default]
-    Knight,
+    PlayerKnight, //* = player */
     BigZombie,
     Wall,
 }

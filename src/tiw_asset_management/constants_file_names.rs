@@ -24,3 +24,5 @@ pub(crate) const FLOOR_0: &str = "floor_1.png";
 //pub(crate) const FLOOR_6: &str = "floor_6.png";
 //pub(crate) const FLOOR_7: &str = "floor_7.png";
 //pub(crate) const FLOOR_8: &str = "floor_8.png";
+
+pub(crate) const WALL_MID: &str = "wall_mid.png";
