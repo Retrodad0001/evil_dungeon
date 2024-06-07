@@ -184,26 +184,25 @@ pub(crate) fn calculate_velocity_for_player(
 
     let mut player: (Mut<Transform>, Mut<ComponentCanMove>) = movement_player.single_mut();
 
-    let previous_location: Vec3 = Vec3::new(player.0.translation.x, player.0.translation.y, 0.0);
+    //TODO check wall distance and stop player from moving (collision detection)
+
 
     player.1.calculate_velocity(&delta_time);
-    let potential_new_location = player.0.translation
+    
+    //TODO draw that location to test with gizmo and other colliders when bevy collision is implemented
+
+    let is_blocking_tile_in_that_direction: bool = false;
+
+    if is_blocking_tile_in_that_direction {
+        debug!("player is blocked by wall");
+    } else {
+        let new_location = player.0.translation
         + Vec3::new(
             player.1.current_velocity.x,
             player.1.current_velocity.y,
             0.0,
         );
-
-    let is_blocking_tile: bool = resource_game_state
-        .tiw_tile_map
-        .is_blocking_tile_at_location(potential_new_location.x, potential_new_location.y, 16);
-    //TODO fix the magic number
-
-    if is_blocking_tile {
-        player.0.translation = previous_location;
-        debug!("player is blocked by wall");
-    } else {
-        player.0.translation = potential_new_location;
+        player.0.translation = new_location;
     }
 }
 

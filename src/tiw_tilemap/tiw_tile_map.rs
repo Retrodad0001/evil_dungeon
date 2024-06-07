@@ -51,7 +51,9 @@ impl TiwTileMap {
     }
 
     pub(crate) fn is_blocking_tile_at_location(&self, x: f32, y: f32, tile_wh: i32) -> bool {
-        match self.get_tile_type_at_location(x, y, tile_wh) {
+        let tile_type: TileType = self.get_tile_type_at_location(x, y, tile_wh);
+
+        match tile_type {
             TileType::MidWall => true,
             TileType::Floor0 => false,
         }
