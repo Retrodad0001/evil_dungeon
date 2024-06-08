@@ -162,6 +162,7 @@ fn add_screen_playing_debug_systems(app: &mut App) {
         (
             debug_show_pivot_points,
             debug_show_collision_bounds,
+            debug_show_grid_coordinates,
             enable_disable_debug_console_with_f12,
         )
             .run_if(in_state(ScreenState::Playing)),

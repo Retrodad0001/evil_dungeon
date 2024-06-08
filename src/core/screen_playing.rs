@@ -49,7 +49,7 @@ pub(crate) fn new_level(
     debug!("start - new_level");
 
     //generate floor map
-    let map_generation_input = MapGenerationInput::new(20, 15);
+    let map_generation_input: MapGenerationInput = MapGenerationInput::new(10, 10);
 
     resource_game_state
         .tiw_tile_map
@@ -88,23 +88,31 @@ pub(crate) fn new_level(
     }
 
     //spawn player in level
+    let spawn_location: Vec2 = resource_game_state
+        .tiw_tile_map
+        .get_world_position_from_tile_position(1, 1);
+
     let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
     commands.spawn(KnightBundle::new(
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_knight_idle,
-        Vec2::new(200.0, 200.0),
+        spawn_location,
         100,
     ));
 
     //spawn enemies in level
+    let spawn_location: Vec2 = resource_game_state
+        .tiw_tile_map
+        .get_world_position_from_tile_position(5, 5);
+
     let index_big_zombie_idle: usize =
         atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
     commands.spawn(BigZombieBundle::new(
         atlas_info.atlas_texture_handle.clone(),
         atlas_info.texture_atlas_layout_handle.clone(),
         index_big_zombie_idle,
-        Vec2::new(140.0, 140.0),
+        spawn_location,
         50,
     ));
 
@@ -175,6 +183,7 @@ pub(crate) fn animate_all(
 
 pub(crate) fn calculate_velocity_for_player(
     mut movement_player: Query<(&mut Transform, &mut ComponentCanMove), With<ComponentPlayerTag>>,
+    resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
     time: Res<Time>,
 ) {
     let delta_time: f32 = time.delta_seconds();
@@ -183,8 +192,21 @@ pub(crate) fn calculate_velocity_for_player(
 
     player.1.calculate_velocity_no_slerp(&delta_time);
 
-    //TODO check wall distance and stop player from moving (collision detection)
-    let is_blocking_tile_in_that_direction: bool = false;
+    let direction: Vec2 = player.1.direction;
+    let mut ray_length: f32 = 10.0;
+
+    if direction.y < 0.0 {
+        ray_length -= 12.0;
+    } //* in future use real raycast with builtin bevy functionality
+
+    let additional_distance: Vec2 = direction * ray_length;
+
+    let search_tile_location: Vec2 =
+        Vec2::new(player.0.translation.x, player.0.translation.y) + additional_distance;
+
+    let is_blocking_tile_in_that_direction: bool = resource_game_state
+        .tiw_tile_map
+        .is_blocking_tile_at_location(search_tile_location.x, search_tile_location.y);
 
     if is_blocking_tile_in_that_direction {
         debug!("player is blocked by wall");
@@ -253,11 +275,11 @@ pub(crate) fn physics_determine_actor_collision_for_all(
 pub(crate) fn handle_health_when_event_collision_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
 ) {
-    for collision_event in event_collision_detected.read() {
-        info!(
-            "handle_health for actor: {:?}",
-            collision_event.entity_a_actor_kind
-        );
+    for _collision_event in event_collision_detected.read() {
+        // info!(
+        //     "handle_health for actor: {:?}",
+        //     collision_event.entity_a_actor_kind
+        // );
 
         //TODO check if other entity has health
         //TODO if so than apply damage

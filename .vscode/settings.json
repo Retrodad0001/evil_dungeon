@@ -5,6 +5,7 @@
         "egui",
         "hashbrown",
         "iyes",
+        "raycast",
         "slerp",
         "tilemap",
         "tweening",

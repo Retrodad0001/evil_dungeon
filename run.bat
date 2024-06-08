@@ -2,7 +2,7 @@ cls
 
 cargo fmt
 
-cargo test
+cargo test 
 
 cargo clippy
 
