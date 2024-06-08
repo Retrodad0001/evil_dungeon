@@ -1,12 +1,10 @@
+use super::events::prelude::EventCollisionDetected;
+use super::resource_general_game_state;
 use crate::core::prelude::*;
 use crate::tiw_asset_management::prelude::*;
 use crate::tiw_tilemap::prelude::MapGenerationInput;
 use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use bevy::prelude::*;
-use bevy::scene::ron::de;
-
-use super::events::prelude::EventCollisionDetected;
-use super::resource_general_game_state;
 
 pub(crate) fn load_assets(
     bevy_asset_server: Res<AssetServer>,
@@ -178,30 +176,25 @@ pub(crate) fn animate_all(
 pub(crate) fn calculate_velocity_for_player(
     mut movement_player: Query<(&mut Transform, &mut ComponentCanMove), With<ComponentPlayerTag>>,
     time: Res<Time>,
-    resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
 ) {
     let delta_time: f32 = time.delta_seconds();
 
     let mut player: (Mut<Transform>, Mut<ComponentCanMove>) = movement_player.single_mut();
 
+    player.1.calculate_velocity_no_slerp(&delta_time);
+
     //TODO check wall distance and stop player from moving (collision detection)
-
-
-    player.1.calculate_velocity(&delta_time);
-    
-    //TODO draw that location to test with gizmo and other colliders when bevy collision is implemented
-
     let is_blocking_tile_in_that_direction: bool = false;
 
     if is_blocking_tile_in_that_direction {
         debug!("player is blocked by wall");
     } else {
         let new_location = player.0.translation
-        + Vec3::new(
-            player.1.current_velocity.x,
-            player.1.current_velocity.y,
-            0.0,
-        );
+            + Vec3::new(
+                player.1.current_velocity.x,
+                player.1.current_velocity.y,
+                0.0,
+            );
         player.0.translation = new_location;
     }
 }
@@ -216,7 +209,7 @@ pub(crate) fn calculate_velocity_for_enemies(
     let delta_time: f32 = time.delta_seconds();
 
     for (mut transform, mut movement) in movement_entities_query.iter_mut() {
-        movement.calculate_velocity(&delta_time);
+        movement.calculate_velocity_no_slerp(&delta_time);
         transform.translation += Vec3::new(
             movement.current_velocity.x,
             movement.current_velocity.y,
@@ -225,7 +218,7 @@ pub(crate) fn calculate_velocity_for_enemies(
     }
 }
 
-pub(crate) fn physics_determine_collision_for_all(
+pub(crate) fn physics_determine_actor_collision_for_all(
     collision_entities_query: Query<(
         Entity,
         &Transform,
@@ -268,7 +261,7 @@ pub(crate) fn handle_health_when_event_collision_for_all(
 
         //TODO check if other entity has health
         //TODO if so than apply damage
-        //TODO check if dead and send event
+        //TODO check if dead and send event when that is the case
     }
 }
 

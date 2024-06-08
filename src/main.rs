@@ -136,7 +136,7 @@ fn add_screen_playing_systems(app: &mut App) {
     app.add_systems(
         FixedUpdate,
         (
-            physics_determine_collision_for_all,
+            physics_determine_actor_collision_for_all,
             calculate_velocity_for_player,
             calculate_velocity_for_enemies,
         )

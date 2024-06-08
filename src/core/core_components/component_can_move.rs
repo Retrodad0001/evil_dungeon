@@ -19,7 +19,7 @@ impl ComponentCanMove {
     }
 
     #[inline(always)]
-    pub(crate) fn calculate_velocity(&mut self, delta_time: &f32) {
+    pub(crate) fn calculate_velocity_no_slerp(&mut self, delta_time: &f32) {
         if self.direction.length() <= 0.0 {
             self.current_velocity = Vec2::new(0.0, 0.0);
             return;

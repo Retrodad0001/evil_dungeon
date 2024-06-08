@@ -1,8 +1,6 @@
-use bevy::prelude::*;
-
-use crate::TileType;
-
 use super::prelude::MapGenerationInput;
+use crate::TileType;
+use bevy::prelude::*;
 
 #[derive(Component, Resource, Default)]
 pub(crate) struct TiwTileMap {
@@ -59,7 +57,7 @@ impl TiwTileMap {
         }
     }
 
-    pub(crate) fn get_tile_type_at_location(&self, x: f32, y: f32, tile_wh: i32) -> TileType {
+    fn get_tile_type_at_location(&self, x: f32, y: f32, tile_wh: i32) -> TileType {
         let x = x as u32;
         let y = y as u32;
 
