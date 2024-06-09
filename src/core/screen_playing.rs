@@ -1,3 +1,5 @@
+use std::borrow::{Borrow, BorrowMut};
+
 use super::events::prelude::EventCollisionDetected;
 use super::resource_general_game_state;
 use crate::core::prelude::*;
@@ -263,8 +265,7 @@ pub(crate) fn physics_determine_actor_collision_for_all(
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                event_collision_detected
-                    .send(EventCollisionDetected::new(*actor_kind_a, *actor_kind_b));
+                event_collision_detected.send(EventCollisionDetected::new(entity_a, entity_b));
 
                 //* debug!("collision between {:?} and {:?}", name_a, name_b);
             }
@@ -272,40 +273,42 @@ pub(crate) fn physics_determine_actor_collision_for_all(
     }
 }
 
-pub(crate) fn handle_health_when_event_collision_for_all(
+pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
+    mut event_actor_is_killed: EventWriter<EventActorIsKilled>,
+    mut world: World,
 ) {
-    for _collision_event in event_collision_detected.read() {
-        // info!(
-        //     "handle_health for actor: {:?}",
-        //     collision_event.entity_a_actor_kind
-        // );
+    for collision_event in event_collision_detected.read() {
+        let entity_a: Entity = collision_event.entity_a;
+        let entity_b: Entity = collision_event.entity_b;
 
-        //TODO check if other entity has health
-        //TODO if so than apply damage
-        //TODO check if dead and send event when that is the case
+        let entity_a_world_ref: EntityRef = world.entity(entity_a);
+        let component_damage_option =
+            entity_a_world_ref.get::<ComponentCanDealDamage>();
+
+        let mut entity_world_mut: EntityWorldMut = world.entity_mut(entity_b);
+        let component_health_option =
+            entity_world_mut.get_mut::<ComponentHasHealth>();
+
+        if component_damage_option.is_none() || component_health_option.is_none() {
+            continue;
+        }
+
+        let mut health  = component_health_option.unwrap();
+        let damage   = component_damage_option.unwrap();
+
+        health.current_health -= damage.damage_amount;
+
+        if health.current_health <= 0 {
+            event_actor_is_killed.send(EventActorIsKilled::new(entity_b));
+        }
     }
 }
 
-pub(crate) fn handle_event_actor_is_killed(
+pub(crate) fn actor_is_killed_event_handle_for_all(
     mut event_actor_is_killed: EventReader<EventActorIsKilled>,
 ) {
-    for event in event_actor_is_killed.read() {
-        debug!("Actor is killed! : {:?}", event.actor_type);
-
-        match event.actor_type {
-            ComponentActorKind::PlayerKnight => {
-                //TODO game over or something
-            }
-            ComponentActorKind::BigZombie => {
-                //TODO update score -> create system for updating ui
-                //TODO when actor is killed, destroy entity in world
-            }
-            ComponentActorKind::Wall => {
-                //* ignore, walls cannot be destroyed */
-            }
-        }
-    }
+    for _event in event_actor_is_killed.read() {}
 }
 
 pub(crate) fn update_camera_position(

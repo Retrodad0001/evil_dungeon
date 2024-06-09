@@ -125,21 +125,19 @@ fn add_screen_playing_systems(app: &mut App) {
             do_fancy_ai_for_enemies,
             calculate_direction_for_player,
             calculate_direction_for_enemies,
+            calculate_velocity_for_player,
+            calculate_velocity_for_enemies,
             animate_all,
             update_camera_position,
-            handle_health_when_event_collision_for_all,
-            handle_event_actor_is_killed,
+            collision_event_handle_damage_dealing_and_health_for_all,
+            actor_is_killed_event_handle_for_all,
         )
             .run_if(in_state(ScreenState::Playing)),
     );
 
     app.add_systems(
         FixedUpdate,
-        (
-            physics_determine_actor_collision_for_all,
-            calculate_velocity_for_player,
-            calculate_velocity_for_enemies,
-        )
+        (physics_determine_actor_collision_for_all,)
             .chain()
             .run_if(in_state(ScreenState::Playing)),
     );
