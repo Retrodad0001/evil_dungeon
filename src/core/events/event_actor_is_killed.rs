@@ -7,8 +7,6 @@ pub(crate) struct EventActorIsKilled {
 
 impl EventActorIsKilled {
     pub(crate) fn new(entity_killed: Entity) -> Self {
-        Self {
-            entity_killed,
-        }
+        Self { entity_killed }
     }
 }

@@ -7,13 +7,7 @@ pub(crate) struct EventCollisionDetected {
 }
 
 impl EventCollisionDetected {
-    pub(crate) fn new(
-        entity_a: Entity,
-        entity_b: Entity,
-    ) -> Self {
-        Self {
-            entity_a,
-            entity_b,
-        }
+    pub(crate) fn new(entity_a: Entity, entity_b: Entity) -> Self {
+        Self { entity_a, entity_b }
     }
 }

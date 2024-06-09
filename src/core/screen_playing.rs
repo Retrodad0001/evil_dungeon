@@ -1,5 +1,3 @@
-use std::borrow::{Borrow, BorrowMut};
-
 use super::events::prelude::EventCollisionDetected;
 use super::resource_general_game_state;
 use crate::core::prelude::*;
@@ -199,7 +197,7 @@ pub(crate) fn calculate_velocity_for_player(
 
     if direction.y < 0.0 {
         ray_length -= 12.0;
-    } //* in future use real raycast with builtin bevy functionality
+    } //* in future use real raycast with builtin bevy bounds functionality
 
     let additional_distance: Vec2 = direction * ray_length;
 
@@ -211,7 +209,7 @@ pub(crate) fn calculate_velocity_for_player(
         .is_blocking_tile_at_location(search_tile_location.x, search_tile_location.y);
 
     if is_blocking_tile_in_that_direction {
-        debug!("player is blocked by wall");
+        info!("player is blocked by wall");
     } else {
         let new_location = player.0.translation
             + Vec3::new(
@@ -247,12 +245,11 @@ pub(crate) fn physics_determine_actor_collision_for_all(
         Entity,
         &Transform,
         &ComponentCanCollide,
-        &ComponentActorKind,
     )>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,
 ) {
-    for (entity_a, transform_a, collision_a, actor_kind_a) in collision_entities_query.iter() {
-        for (entity_b, transform_b, collision_b, actor_kind_b) in collision_entities_query.iter() {
+    for (entity_a, transform_a, collision_a, ) in collision_entities_query.iter() {
+        for (entity_b, transform_b, collision_b, ) in collision_entities_query.iter() {
             let should_ignore_collision_processing: bool = collision_a
                 .should_ignore_collision_processing(entity_a, entity_b, collision_a, collision_b);
 
@@ -275,33 +272,32 @@ pub(crate) fn physics_determine_actor_collision_for_all(
 
 pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
-    mut event_actor_is_killed: EventWriter<EventActorIsKilled>,
-    mut world: World,
+    mut _event_actor_is_killed: EventWriter<EventActorIsKilled>,
+    // mut world: World,
 ) {
-    for collision_event in event_collision_detected.read() {
-        let entity_a: Entity = collision_event.entity_a;
-        let entity_b: Entity = collision_event.entity_b;
+    for _collision_event in event_collision_detected.read() {
+        //   let entity_a: Entity = collision_event.entity_a;
+        //  let entity_b: Entity = collision_event.entity_b;
 
-        let entity_a_world_ref: EntityRef = world.entity(entity_a);
-        let component_damage_option =
-            entity_a_world_ref.get::<ComponentCanDealDamage>();
+        //   let entity_a_world_ref: EntityRef = world.entity(entity_a);
+        //   let component_damage_option = entity_a_world_ref.get::<ComponentCanDealDamage>();
 
-        let mut entity_world_mut: EntityWorldMut = world.entity_mut(entity_b);
-        let component_health_option =
-            entity_world_mut.get_mut::<ComponentHasHealth>();
+        // let mut entity_world_mut: EntityWorldMut = world.entity_mut(entity_b);
+        // let component_health_option =
+        //     entity_world_mut.get_mut::<ComponentHasHealth>();
 
-        if component_damage_option.is_none() || component_health_option.is_none() {
-            continue;
-        }
+        // if component_damage_option.is_none() || component_health_option.is_none() {
+        //     continue;
+        // }
 
-        let mut health  = component_health_option.unwrap();
-        let damage   = component_damage_option.unwrap();
+        // let mut health  = component_health_option.unwrap();
+        // let damage   = component_damage_option.unwrap();
 
-        health.current_health -= damage.damage_amount;
+        // health.current_health -= damage.damage_amount;
 
-        if health.current_health <= 0 {
-            event_actor_is_killed.send(EventActorIsKilled::new(entity_b));
-        }
+        // if health.current_health <= 0 {
+        //     event_actor_is_killed.send(EventActorIsKilled::new(entity_b));
+        // }
     }
 }
 

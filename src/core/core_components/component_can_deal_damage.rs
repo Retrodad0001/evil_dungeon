@@ -8,8 +8,6 @@ pub(crate) struct ComponentCanDealDamage {
 
 impl ComponentCanDealDamage {
     pub(crate) fn new(damage_amount: i32) -> Self {
-        Self {
-            damage_amount,
-        }
+        Self { damage_amount }
     }
 }
