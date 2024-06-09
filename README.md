@@ -3,7 +3,7 @@
 An 2d dungeon crawler made with the Bevy Engine in Rust.
 I created this game to learn more about the Bevy Engine and the Rust language. Maybe it will be useful for someone else too.
 
-There are many ways to implement the design, context is important like performance constraints. In my case maybe OO way of design was better or using another engine or framework? I don’t know for sure. Use or not use external crates or not?
+There are many ways to implement the design, context is important like performance constraints. In my case maybe OO way of design was better or using another engine or framework?
 
 My sub goals are:
 - have some discussions with the community about ECS designing and the trade-offs in de context of maintainability
