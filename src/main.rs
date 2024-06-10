@@ -83,6 +83,16 @@ fn add_plugins(app: &mut App) {
 }
 
 fn add_type_registrations(app: &mut App) {
+    //TODO remove bevy_trait_query when this is build in bevy
+    //*https://crates.io/crates/bevy-trait-query */
+    use bevy_trait_query::RegisterExt;
+
+    app.register_component_as::<dyn TiWAI, ComponentAIIdle>();
+    app.register_component_as::<dyn TiWAI, ComponentAIChase>();
+    app.register_component_as::<dyn TiWAI, ComponentAIFlee>();
+    app.register_component_as::<dyn TiWAI, ComponentAIWandering>();
+    app.register_component_as::<dyn TiWAI, ComponentAIAttackSpawnEnemies>();
+
     app.register_type::<ComponentCanMove>();
     app.register_type::<ComponentCanAnimate>();
     app.register_type::<ComponentActorKind>();

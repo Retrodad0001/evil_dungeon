@@ -267,7 +267,6 @@ pub(crate) fn physics_determine_actor_collision_for_all(
             if has_collided {
                 event_collision_detected.send(EventCollisionDetected::new(
                     *actor_a_kind,
-                    *actor_b_kind,
                     entity_a,
                     entity_b,
                 ));
