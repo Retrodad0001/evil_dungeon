@@ -4,6 +4,7 @@ use bevy::prelude::*;
 #[reflect(Resource)]
 pub(crate) struct ComponentHasHealth {
     pub(crate) current_health: i32,
+    pub(crate) marked_as_dead: bool,
 }
 
 impl ComponentHasHealth {
@@ -13,6 +14,9 @@ impl ComponentHasHealth {
             "initial current_health must be greater than 0"
         );
 
-        Self { current_health }
+        Self {
+            current_health,
+            marked_as_dead: false,
+        }
     }
 }

@@ -245,11 +245,14 @@ pub(crate) fn physics_determine_actor_collision_for_all(
         Entity,
         &Transform,
         &ComponentCanCollide,
+        &ComponentActorKind,
     )>,
     mut event_collision_detected: EventWriter<EventCollisionDetected>,
 ) {
-    for (entity_a, transform_a, collision_a, ) in collision_entities_query.iter() {
-        for (entity_b, transform_b, collision_b, ) in collision_entities_query.iter() {
+    //TODO: optimize this : only trigger event when collision is detected once OnEnter or OnLeave
+
+    for (entity_a, transform_a, collision_a, actor_a_kind) in collision_entities_query.iter() {
+        for (entity_b, transform_b, collision_b, actor_b_kind) in collision_entities_query.iter() {
             let should_ignore_collision_processing: bool = collision_a
                 .should_ignore_collision_processing(entity_a, entity_b, collision_a, collision_b);
 
@@ -262,7 +265,12 @@ pub(crate) fn physics_determine_actor_collision_for_all(
             let has_collided: bool = entity_a_bounds.intersects(&entity_b_bounds);
 
             if has_collided {
-                event_collision_detected.send(EventCollisionDetected::new(entity_a, entity_b));
+                event_collision_detected.send(EventCollisionDetected::new(
+                    *actor_a_kind,
+                    *actor_b_kind,
+                    entity_a,
+                    entity_b,
+                ));
 
                 //* debug!("collision between {:?} and {:?}", name_a, name_b);
             }
@@ -272,39 +280,53 @@ pub(crate) fn physics_determine_actor_collision_for_all(
 
 pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
     mut event_collision_detected: EventReader<EventCollisionDetected>,
-    mut _event_actor_is_killed: EventWriter<EventActorIsKilled>,
-    // mut world: World,
+    mut event_actor_is_killed: EventWriter<EventActorIsKilled>,
+    query_actor_a: Query<&ComponentCanDealDamage>,
+    mut query_actor_b: Query<&mut ComponentHasHealth>,
 ) {
-    for _collision_event in event_collision_detected.read() {
-        //   let entity_a: Entity = collision_event.entity_a;
-        //  let entity_b: Entity = collision_event.entity_b;
+    for collision_event in event_collision_detected.read() {
+        let entity_a: Entity = collision_event.entity_a;
+        let entity_b: Entity = collision_event.entity_b;
 
-        //   let entity_a_world_ref: EntityRef = world.entity(entity_a);
-        //   let component_damage_option = entity_a_world_ref.get::<ComponentCanDealDamage>();
+        //*https://docs.rs/bevy/latest/bevy/ecs/prelude/struct.Query.html#method.get_many_mut *//
+        let vec_entity_a: [Entity; 1] = [entity_a];
+        let [entity_a_damage_dealing]: [&ComponentCanDealDamage; 1] =
+            query_actor_a.many(vec_entity_a);
 
-        // let mut entity_world_mut: EntityWorldMut = world.entity_mut(entity_b);
-        // let component_health_option =
-        //     entity_world_mut.get_mut::<ComponentHasHealth>();
+        let vec_entity_b: [Entity; 1] = [entity_b];
+        let [mut entity_b_health]: [Mut<ComponentHasHealth>; 1] =
+            query_actor_b.many_mut(vec_entity_b);
 
-        // if component_damage_option.is_none() || component_health_option.is_none() {
-        //     continue;
-        // }
+        //BUG:check when entity's don't have health or damage dealing
 
-        // let mut health  = component_health_option.unwrap();
-        // let damage   = component_damage_option.unwrap();
+        entity_b_health.current_health -= entity_a_damage_dealing.damage_amount;
+        info!(
+            "{:?} current_health: {:?}",
+            collision_event.entity_b_actor_kind, entity_b_health.current_health
+        );
 
-        // health.current_health -= damage.damage_amount;
+        if entity_b_health.current_health <= 0 {
+            //*is already marked dead so, it cannot go dead again */
+            if entity_b_health.marked_as_dead {
+                continue;
+            }
 
-        // if health.current_health <= 0 {
-        //     event_actor_is_killed.send(EventActorIsKilled::new(entity_b));
-        // }
+            entity_b_health.marked_as_dead = true;
+
+            event_actor_is_killed.send(EventActorIsKilled::new(
+                collision_event.entity_b_actor_kind,
+                entity_b,
+            ));
+        }
     }
 }
 
 pub(crate) fn actor_is_killed_event_handle_for_all(
     mut event_actor_is_killed: EventReader<EventActorIsKilled>,
 ) {
-    for _event in event_actor_is_killed.read() {}
+    for event in event_actor_is_killed.read() {
+        info!("actor {:?} is killed", event.actor_kind);
+    }
 }
 
 pub(crate) fn update_camera_position(
