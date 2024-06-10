@@ -48,8 +48,7 @@ pub(crate) fn new_level(
 ) {
     debug!("start - new_level");
 
-    //generate floor map
-    let map_generation_input: MapGenerationInput = MapGenerationInput::new(10, 10);
+    let map_generation_input: MapGenerationInput = MapGenerationInput::new(20, 20);
 
     resource_game_state
         .tiw_tile_map
@@ -104,8 +103,21 @@ pub(crate) fn new_level(
     //spawn enemies in level
     let spawn_location: Vec2 = resource_game_state
         .tiw_tile_map
-        .get_world_position_from_tile_position(5, 5);
+        .get_world_position_from_tile_position(10, 15);
+    let index_big_zombie_idle: usize =
+        atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
+    commands.spawn(BigZombieBundle::new(
+        atlas_info.atlas_texture_handle.clone(),
+        atlas_info.texture_atlas_layout_handle.clone(),
+        index_big_zombie_idle,
+        spawn_location,
+        50,
+    ));
 
+    //spawn enemies in level
+    let spawn_location: Vec2 = resource_game_state
+        .tiw_tile_map
+        .get_world_position_from_tile_position(15, 8);
     let index_big_zombie_idle: usize =
         atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
     commands.spawn(BigZombieBundle::new(
@@ -123,7 +135,7 @@ pub(crate) fn calculate_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &mut Transform)>,
 ) {
-    let mut direction_vector: Vec2 = Vec2::new(0.0, 0.0);
+    let mut direction_vector: Vec3 = Vec3::new(0.0, 0.0, 0.0);
 
     if keyboard_input.pressed(KeyCode::KeyA) || keyboard_input.pressed(KeyCode::ArrowLeft) {
         direction_vector.x = -1.0;
@@ -145,11 +157,55 @@ pub(crate) fn calculate_direction_for_player(
     player.0.direction = direction_vector;
 }
 
-pub(crate) fn do_fancy_ai_for_enemies() {
-    info!("AI Tick is started");
+pub(crate) fn do_fancy_ai_for_enemies(
+    mut enemies_query: Query<
+        (&mut Transform, &mut ComponentAI, &ComponentActorKind),
+        Without<ComponentPlayerTag>,
+    >,
+    player_query: Query<&Transform, With<ComponentPlayerTag>>,
+    time: Res<Time>,
+) {
+    let enemies = enemies_query.iter_mut();
+    let player = player_query.single();
+
+    for (transform, mut ai, actor_kind) in enemies {
+        ai.timer.tick(time.delta());
+
+        if ai.timer.finished() {
+            ai.determine_new_state(*actor_kind, transform.translation, player.translation);
+        }
+    }
 }
 
-pub(crate) fn calculate_direction_for_enemies() {}
+pub(crate) fn calculate_direction_for_enemies_based_on_ai_state(
+    mut enemies_query: Query<(&mut ComponentCanMove, &ComponentAI, &Transform)>,
+) {
+    let enemies = enemies_query.iter_mut();
+
+    for enemy in enemies {
+        let (mut movement, ai, transform) = enemy;
+
+        if ai.next_target_position.is_none() {
+            continue;
+        }
+
+        let mut new_direction: Vec3 = ai.next_target_position.unwrap() - transform.translation;
+        new_direction = new_direction.normalize_or_zero();
+
+        match ai.current_state {
+            AiState::Idle => {
+                movement.direction = Vec3::ZERO;
+            }
+            AiState::AttackingWithSpawningEnemies
+            | AiState::Fleeing
+            | AiState::Wandering
+            | AiState::ChasingUntilCloseEnoughToAttack
+            | AiState::AttackMelee => {
+                movement.direction = new_direction;
+            }
+        }
+    }
+}
 
 pub(crate) fn animate_all(
     mut animation_entities_query: Query<(
@@ -174,7 +230,7 @@ pub(crate) fn animate_all(
                 delta_time,
                 &animation_info,
             )
-            .unwrap();
+            .unwrap_or_else(|| panic!("animate_all :: animation index not found for {:?}, maybe the animation is not setup correctly", actor_kind));
 
         texture_atlas.index = atlas_index as usize;
 
@@ -194,17 +250,20 @@ pub(crate) fn calculate_velocity_for_player(
 
     player.1.calculate_velocity_no_slerp(&delta_time);
 
-    let direction: Vec2 = player.1.direction;
+    let direction: Vec3 = player.1.direction;
     let mut ray_length: f32 = 10.0;
 
     if direction.y < 0.0 {
         ray_length -= 12.0;
     } //* in future use real raycast with builtin bevy bounds functionality
 
-    let additional_distance: Vec2 = direction * ray_length;
+    let additional_distance: Vec3 = direction * ray_length;
 
-    let search_tile_location: Vec2 =
-        Vec2::new(player.0.translation.x, player.0.translation.y) + additional_distance;
+    let search_tile_location: Vec3 = Vec3::new(
+        player.0.translation.x,
+        player.0.translation.y,
+        player.0.translation.z,
+    ) + additional_distance;
 
     let is_blocking_tile_in_that_direction: bool = resource_game_state
         .tiw_tile_map
@@ -223,11 +282,8 @@ pub(crate) fn calculate_velocity_for_player(
     }
 }
 
-pub(crate) fn calculate_velocity_for_enemies(
-    mut movement_entities_query: Query<
-        (&mut Transform, &mut ComponentCanMove),
-        Without<ComponentPlayerTag>,
-    >,
+pub(crate) fn calculate_velocity_for_enemies_based_on_direction(
+    mut movement_entities_query: Query<(&mut Transform, &mut ComponentCanMove)>,
     time: Res<Time>,
 ) {
     let delta_time: f32 = time.delta_seconds();
@@ -254,7 +310,7 @@ pub(crate) fn physics_determine_actor_collision_for_all(
     //TODO: optimize this : only trigger event when collision is detected once OnEnter or OnLeave
 
     for (entity_a, transform_a, collision_a, actor_a_kind) in collision_entities_query.iter() {
-        for (entity_b, transform_b, collision_b, actor_b_kind) in collision_entities_query.iter() {
+        for (entity_b, transform_b, collision_b, _actor_b_kind) in collision_entities_query.iter() {
             let should_ignore_collision_processing: bool = collision_a
                 .should_ignore_collision_processing(entity_a, entity_b, collision_a, collision_b);
 
@@ -314,10 +370,8 @@ pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
 
             entity_b_health.marked_as_dead = true;
 
-            event_actor_is_killed.send(EventActorIsKilled::new(
-                collision_event.entity_b_actor_kind,
-                entity_b,
-            ));
+            event_actor_is_killed
+                .send(EventActorIsKilled::new(collision_event.entity_b_actor_kind));
         }
     }
 }

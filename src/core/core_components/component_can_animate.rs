@@ -23,7 +23,7 @@ impl ComponentCanAnimate {
     pub(crate) fn determine_current_atlas_index_for_animation(
         &mut self,
         actor_kind: &ComponentActorKind,
-        direction: &Vec2,
+        direction: &Vec3,
         delta_time: f32,
         animation_info: &Res<ResourceAnimationInfo>,
     ) -> Option<i32> {
@@ -74,7 +74,7 @@ impl ComponentCanAnimate {
     fn determine_animation_clip(
         &mut self,
         actor_kind: &ComponentActorKind,
-        direction: &Vec2,
+        direction: &Vec3,
     ) -> Option<ComponentAnimationClipKind> {
         let actor_is_moving: bool = direction.length() > 0.0;
 

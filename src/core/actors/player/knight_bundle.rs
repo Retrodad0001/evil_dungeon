@@ -47,7 +47,7 @@ impl KnightBundle {
                 },
                 ..default()
             },
-            movement: ComponentCanMove::new(),
+            movement: ComponentCanMove::new(80.0),
             animation: ComponentCanAnimate::new(ComponentAnimationClipKind::KnightIdle),
             health: ComponentHasHealth::new(start_health),
             collision: ComponentCanCollide::new(

@@ -5,7 +5,6 @@ use bevy::{
         settings::{Backends, RenderCreation, WgpuSettings},
         RenderPlugin,
     },
-    time::common_conditions::on_timer,
     window::{PresentMode, WindowMode},
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -13,7 +12,6 @@ use bevy_light_2d::plugin::Light2dPlugin;
 
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
-use std::time::Duration;
 use tiw_asset_management::prelude::*;
 
 mod core;
@@ -123,20 +121,14 @@ fn add_screen_playing_on_enter_systems(app: &mut App) {
 }
 
 fn add_screen_playing_systems(app: &mut App) {
-    //*timed systems */
-    app.add_systems(
-        Update,
-        (do_fancy_ai_for_enemies.run_if(on_timer(Duration::from_secs(2))),)
-            .run_if(in_state(ScreenState::Playing)),
-    );
-
     app.add_systems(
         Update,
         (
+            do_fancy_ai_for_enemies,
             calculate_direction_for_player,
-            calculate_direction_for_enemies,
             calculate_velocity_for_player,
-            calculate_velocity_for_enemies,
+            calculate_direction_for_enemies_based_on_ai_state,
+            calculate_velocity_for_enemies_based_on_direction,
             animate_all,
             update_camera_position,
             collision_event_handle_damage_dealing_and_health_for_all,
@@ -171,6 +163,7 @@ fn add_screen_playing_debug_systems(app: &mut App) {
             debug_show_pivot_points,
             debug_show_collision_bounds,
             debug_show_grid_coordinates,
+            debug_show_ai_state_above_enemies,
             enable_disable_debug_console_with_f12,
         )
             .run_if(in_state(ScreenState::Playing)),

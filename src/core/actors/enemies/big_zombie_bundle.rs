@@ -44,7 +44,7 @@ impl BigZombieBundle {
                 },
                 ..default()
             },
-            movement: ComponentCanMove::new(),
+            movement: ComponentCanMove::new(30.0),
             animation: ComponentCanAnimate::new(ComponentAnimationClipKind::KnightMoving),
             health: ComponentHasHealth::new(start_health),
             collision: ComponentCanCollide::new(

@@ -6,8 +6,8 @@ pub(crate) enum AiState {
     #[default]
     Idle,
     Wandering,
-    Chasing,
-    Attacking,
-    Dead,
+    ChasingUntilCloseEnoughToAttack,
+    AttackMelee,
+    AttackingWithSpawningEnemies,
     Fleeing,
 }
