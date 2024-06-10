@@ -55,7 +55,7 @@ impl BigZombieBundle {
                 vec![ComponentActorKind::PlayerKnight],
             ),
             damage_dealer: ComponentCanDealDamage::new(25),
-            ai_state: ComponentAI::new(AiState::Idle),
+            ai_state: ComponentAI::new(AiState::Idle, 5.0),
         }
     }
 }

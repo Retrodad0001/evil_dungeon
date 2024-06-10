@@ -199,7 +199,7 @@ pub(crate) fn calculate_direction_for_enemies_based_on_ai_state(
             AiState::AttackingWithSpawningEnemies
             | AiState::Fleeing
             | AiState::Wandering
-            | AiState::ChasingUntilCloseEnoughToAttack
+            | AiState::Chasing
             | AiState::AttackMelee => {
                 movement.direction = new_direction;
             }
