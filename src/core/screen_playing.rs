@@ -145,7 +145,9 @@ pub(crate) fn calculate_direction_for_player(
     player.0.direction = direction_vector;
 }
 
-pub(crate) fn do_fancy_ai_for_enemies() {}
+pub(crate) fn do_fancy_ai_for_enemies() {
+    info!("AI Tick is started");
+}
 
 pub(crate) fn calculate_direction_for_enemies() {}
 

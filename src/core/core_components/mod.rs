@@ -1,4 +1,4 @@
-mod ai_components;
+mod ai;
 mod component_actor_kind;
 mod component_animation_clip;
 mod component_animation_clip_kind;
@@ -12,7 +12,7 @@ mod component_player_tag;
 
 pub(crate) mod prelude {
 
-    pub(crate) use super::ai_components::prelude::*;
+    pub(crate) use super::ai::prelude::*;
     pub(crate) use super::component_actor_kind::*;
     pub(crate) use super::component_animation_clip::*;
     pub(crate) use super::component_animation_clip_kind::*;

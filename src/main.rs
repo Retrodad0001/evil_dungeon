@@ -5,6 +5,7 @@ use bevy::{
         settings::{Backends, RenderCreation, WgpuSettings},
         RenderPlugin,
     },
+    time::common_conditions::on_timer,
     window::{PresentMode, WindowMode},
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -12,6 +13,7 @@ use bevy_light_2d::plugin::Light2dPlugin;
 
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
+use std::time::Duration;
 use tiw_asset_management::prelude::*;
 
 mod core;
@@ -83,15 +85,7 @@ fn add_plugins(app: &mut App) {
 }
 
 fn add_type_registrations(app: &mut App) {
-    //TODO remove bevy_trait_query when this is build in bevy
-    //*https://crates.io/crates/bevy-trait-query */
-    use bevy_trait_query::RegisterExt;
-
-    app.register_component_as::<dyn TiWAI, ComponentAIIdle>();
-    app.register_component_as::<dyn TiWAI, ComponentAIChase>();
-    app.register_component_as::<dyn TiWAI, ComponentAIFlee>();
-    app.register_component_as::<dyn TiWAI, ComponentAIWandering>();
-    app.register_component_as::<dyn TiWAI, ComponentAIAttackSpawnEnemies>();
+    app.register_type::<ComponentAI>();
 
     app.register_type::<ComponentCanMove>();
     app.register_type::<ComponentCanAnimate>();
@@ -129,10 +123,16 @@ fn add_screen_playing_on_enter_systems(app: &mut App) {
 }
 
 fn add_screen_playing_systems(app: &mut App) {
+    //*timed systems */
+    app.add_systems(
+        Update,
+        (do_fancy_ai_for_enemies.run_if(on_timer(Duration::from_secs(2))),)
+            .run_if(in_state(ScreenState::Playing)),
+    );
+
     app.add_systems(
         Update,
         (
-            do_fancy_ai_for_enemies,
             calculate_direction_for_player,
             calculate_direction_for_enemies,
             calculate_velocity_for_player,
