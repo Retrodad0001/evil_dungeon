@@ -32,7 +32,7 @@ fn main() {
     add_screen_playing_on_enter_systems(&mut app);
     add_screen_playing_systems(&mut app);
 
-    app.insert_state(ScreenState::Playing);
+    app.insert_state(ScreenState::Menu);
 
     #[cfg(debug_assertions)]
     add_screen_playing_debug_systems(&mut app);
@@ -110,17 +110,14 @@ fn add_events(app: &mut App) {
 fn add_screen_menu_systems(_app: &mut App) {}
 
 fn add_screen_menu_on_enter_systems(app: &mut App) {
-    // app.add_systems(
-    //     OnEnter(ScreenState::Menu),
-    //     (load_assets, setup_animations, setup_camera).chain(),
-    // );
+    app.add_systems(
+        OnEnter(ScreenState::Menu),
+        (load_assets, setup_animations, setup_camera, go_next_screen).chain(),
+    );
 }
 
 fn add_screen_playing_on_enter_systems(app: &mut App) {
-    app.add_systems(
-        OnEnter(ScreenState::Playing),
-        (load_assets, setup_animations, setup_camera, new_level).chain(),
-    );
+    app.add_systems(OnEnter(ScreenState::Playing), (new_level).chain());
 }
 
 fn add_screen_playing_systems(app: &mut App) {
@@ -168,7 +165,6 @@ fn add_screen_playing_debug_systems(app: &mut App) {
             debug_show_collision_bounds,
             debug_show_grid_coordinates,
             debug_draw_ai_stuff,
-            debug_show_ai_state_above_enemies,
             enable_disable_debug_console_with_f12,
         )
             .run_if(in_state(ScreenState::Playing)),
