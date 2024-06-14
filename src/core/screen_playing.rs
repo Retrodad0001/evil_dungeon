@@ -89,7 +89,7 @@ pub(crate) fn new_level(
     //spawn player in level
     let spawn_location: Vec2 = resource_game_state
         .tiw_tile_map
-        .get_world_position_from_tile_position(1, 1);
+        .get_random_non_blocking_tile_position();
 
     let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
     commands.spawn(KnightBundle::new(
@@ -131,7 +131,7 @@ pub(crate) fn new_level(
     debug!("end - new_level");
 }
 
-pub(crate) fn calculate_direction_for_player(
+pub(crate) fn calculate_movement_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &mut Transform)>,
 ) {
@@ -177,7 +177,7 @@ pub(crate) fn do_fancy_ai_for_enemies(
     }
 }
 
-pub(crate) fn calculate_direction_for_enemies_based_on_ai_state(
+pub(crate) fn calculate_movement_direction_for_enemies_based_on_ai_state(
     mut enemies_query: Query<(&mut ComponentCanMove, &ComponentAI, &Transform)>,
 ) {
     let enemies = enemies_query.iter_mut();
@@ -239,7 +239,7 @@ pub(crate) fn animate_all(
     }
 }
 
-pub(crate) fn calculate_velocity_for_player(
+pub(crate) fn calculate_velocity_based_on_movement_direction_for_player(
     mut movement_player: Query<(&mut Transform, &mut ComponentCanMove), With<ComponentPlayerTag>>,
     resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
     time: Res<Time>,
@@ -282,7 +282,7 @@ pub(crate) fn calculate_velocity_for_player(
     }
 }
 
-pub(crate) fn calculate_velocity_for_enemies_based_on_direction(
+pub(crate) fn calculate_velocity_based_on_movement_direction_for_enemies(
     mut movement_entities_query: Query<(&mut Transform, &mut ComponentCanMove)>,
     time: Res<Time>,
 ) {
@@ -354,7 +354,7 @@ pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
         let [mut entity_b_health]: [Mut<ComponentHasHealth>; 1] =
             query_actor_b.many_mut(vec_entity_b);
 
-        //BUG:check when entity's don't have health or damage dealing
+        //BUG:check when entity's don't have health or damage dealing like walls
 
         entity_b_health.current_health -= entity_a_damage_dealing.damage_amount;
         info!(
@@ -363,7 +363,7 @@ pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
         );
 
         if entity_b_health.current_health <= 0 {
-            //*is already marked dead so, it cannot go dead again */
+            //*is already marked dead so it cannot go dead again */
             if entity_b_health.marked_as_dead {
                 continue;
             }

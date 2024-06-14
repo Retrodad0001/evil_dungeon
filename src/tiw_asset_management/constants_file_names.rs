@@ -21,13 +21,13 @@ pub(crate) const BIG_ZOMBIE_RUN_2: &str = "big_zombie_run_anim_f2.png";
 pub(crate) const BIG_ZOMBIE_RUN_3: &str = "big_zombie_run_anim_f3.png";
 
 pub(crate) const FLOOR_0: &str = "floor_1.png";
-//pub(crate) const FLOOR_1: &str = "floor_1.png";
-//pub(crate) const FLOOR_2: &str = "floor_2.png";
-//pub(crate) const FLOOR_3: &str = "floor_3.png";
-//pub(crate) const FLOOR_4: &str = "floor_4.png";
-//pub(crate) const FLOOR_5: &str = "floor_5.png";
-//pub(crate) const FLOOR_6: &str = "floor_6.png";
-//pub(crate) const FLOOR_7: &str = "floor_7.png";
-//pub(crate) const FLOOR_8: &str = "floor_8.png";
+//*pub(crate) const FLOOR_1: &str = "floor_1.png";
+//*pub(crate) const FLOOR_2: &str = "floor_2.png";
+//*pub(crate) const FLOOR_3: &str = "floor_3.png";
+//*pub(crate) const FLOOR_4: &str = "floor_4.png";
+//*pub(crate) const FLOOR_5: &str = "floor_5.png";
+//*pub(crate) const FLOOR_6: &str = "floor_6.png";
+//*pub(crate) const FLOOR_7: &str = "floor_7.png";
+//*pub(crate) const FLOOR_8: &str = "floor_8.png";
 
 pub(crate) const WALL_MID: &str = "wall_mid.png";

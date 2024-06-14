@@ -75,6 +75,13 @@ impl TiwTileMap {
 
         Vec2::new(world_x + TILE_WH / 2.0, world_y + TILE_WH / 2.0)
     }
+
+    pub(crate) fn get_random_non_blocking_tile_position(&self) -> Vec2 {
+        const RANDOM_X: u32 = 2;
+        const RANDOM_Y: u32 = 2;
+        //TODO implement get_random_non_blocking_tile_position
+        self.get_world_position_from_tile_position(RANDOM_X, RANDOM_Y)
+    }
 }
 
 #[cfg(test)]

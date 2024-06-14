@@ -26,8 +26,7 @@ fn main() {
     add_type_registrations(&mut app);
     add_events(&mut app);
 
-    add_screen_loading_systems(&mut app);
-
+    add_screen_menu_on_enter_systems(&mut app);
     add_screen_menu_systems(&mut app);
 
     add_screen_playing_on_enter_systems(&mut app);
@@ -55,8 +54,8 @@ fn add_plugins(app: &mut App) {
                 ..default()
             })
             .set(ImagePlugin::default_nearest())
-            // setup vulcan backend suppress warnings for now (zie issue #5 or upstream bevy issue #9975)
-            //, remove this when bug is fixed
+            //* setup vulcan backend suppress warnings for now (zie issue #5 or upstream bevy issue #9975)
+            //* remove this when bug is fixed
             .set(RenderPlugin {
                 render_creation: RenderCreation::Automatic(wgpu_setting),
                 ..default()
@@ -84,7 +83,6 @@ fn add_plugins(app: &mut App) {
 
 fn add_type_registrations(app: &mut App) {
     app.register_type::<ComponentAI>();
-
     app.register_type::<ComponentCanMove>();
     app.register_type::<ComponentCanAnimate>();
     app.register_type::<ComponentActorKind>();
@@ -109,9 +107,14 @@ fn add_events(app: &mut App) {
     app.add_event::<EventActorIsKilled>();
 }
 
-fn add_screen_loading_systems(_app: &mut App) {}
-
 fn add_screen_menu_systems(_app: &mut App) {}
+
+fn add_screen_menu_on_enter_systems(app: &mut App) {
+    // app.add_systems(
+    //     OnEnter(ScreenState::Menu),
+    //     (load_assets, setup_animations, setup_camera).chain(),
+    // );
+}
 
 fn add_screen_playing_on_enter_systems(app: &mut App) {
     app.add_systems(
@@ -125,10 +128,10 @@ fn add_screen_playing_systems(app: &mut App) {
         Update,
         (
             do_fancy_ai_for_enemies,
-            calculate_direction_for_player,
-            calculate_velocity_for_player,
-            calculate_direction_for_enemies_based_on_ai_state,
-            calculate_velocity_for_enemies_based_on_direction,
+            calculate_movement_direction_for_player,
+            calculate_movement_direction_for_enemies_based_on_ai_state,
+            calculate_velocity_based_on_movement_direction_for_player,
+            calculate_velocity_based_on_movement_direction_for_enemies,
             animate_all,
             update_camera_position,
             collision_event_handle_damage_dealing_and_health_for_all,

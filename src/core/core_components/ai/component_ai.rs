@@ -50,7 +50,6 @@ impl ComponentAI {
                 if get_distance_to_actor(enemy_pos, player_pos) < CHASE_ATTACK_RANGE {
                     self.current_state = AiState::Chasing;
                     self.next_target_position = Some(player_pos);
-                    //TODO add random location here instead of player
                 } else {
                     self.current_state = AiState::Wandering;
                     self.next_target_position = Some(player_pos);
