@@ -82,9 +82,38 @@ pub(crate) fn debug_draw_ai_stuff(
             let position: Vec2 = Vec2::new(transform.translation.x, transform.translation.y);
 
             //* draw chase radius
-            gizmos.circle_2d(position, ai.chase_attack_range, Color::RED);
 
             //* if there is an target and chasing draw chase line
+            match ai.current_state {
+                AiState::Chasing => {
+                    gizmos.circle_2d(position, ai.chase_attack_range, Color::ORANGE);
+
+                    if let Some(target) = ai.next_target_position {
+                        let target_position = Vec2::new(target.x, target.y);
+                        gizmos.line_2d(position, target_position, Color::ORANGE);
+                    }
+                }
+                AiState::Idle => {}
+                AiState::Wandering => {
+                    gizmos.circle_2d(position, ai.chase_attack_range, Color::BLUE);
+
+                    if let Some(target) = ai.next_target_position {
+                        let target_position = Vec2::new(target.x, target.y);
+                        gizmos.line_2d(position, target_position, Color::BLUE);
+                    }
+                }
+                AiState::AttackMelee => {
+                    gizmos.circle_2d(position, ai.chase_attack_range, Color::RED);
+
+                    if let Some(target) = ai.next_target_position {
+                        let target_position = Vec2::new(target.x, target.y);
+                        gizmos.line_2d(position, target_position, Color::RED);
+                    }
+                }
+                AiState::AttackingWithSpawningEnemies => todo!(),
+                AiState::Fleeing => {}
+            }
+
             if ai.current_state == AiState::Chasing {
                 if let Some(target) = ai.next_target_position {
                     let target_position = Vec2::new(target.x, target.y);

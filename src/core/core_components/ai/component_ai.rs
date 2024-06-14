@@ -59,7 +59,7 @@ impl ComponentAI {
                     self.next_target_position = Some(player_pos);
                 } else {
                     self.current_state = AiState::Wandering;
-                    self.next_target_position = Some(player_pos);
+                    self.next_target_position = Some(player_pos); //TODO randomize instead of player_pos
                 }
             }
             AiState::Chasing => {
