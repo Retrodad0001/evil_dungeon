@@ -58,11 +58,11 @@ pub(crate) fn new_level(
 
     for y in 0..resource_game_state.tiw_tile_map.map_height {
         for x in 0..resource_game_state.tiw_tile_map.map_width {
-            let tile: TileType =
+            let tile: ComponentTileType =
                 resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
 
             match tile {
-                TileType::Floor0 => {
+                ComponentTileType::Floor0 => {
                     let atlas_index_floor: usize =
                         atlas_info.get_bevy_atlas_index_by_file_name(FLOOR_0);
                     commands.spawn(FloorBundle::new(
@@ -70,9 +70,10 @@ pub(crate) fn new_level(
                         atlas_info.texture_atlas_layout_handle.clone(),
                         atlas_index_floor,
                         Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
+                        ComponentTileType::Floor0,
                     ));
                 }
-                TileType::MidWall => {
+                ComponentTileType::MidWall => {
                     let atlas_index_wall: usize =
                         atlas_info.get_bevy_atlas_index_by_file_name(WALL_MID);
                     commands.spawn(WallBundle::new(
@@ -80,6 +81,7 @@ pub(crate) fn new_level(
                         atlas_info.texture_atlas_layout_handle.clone(),
                         atlas_index_wall,
                         Vec2::new(x as f32 * TILE_SIZE_XY, y as f32 * TILE_SIZE_XY),
+                        ComponentTileType::MidWall,
                     ));
                 }
             }

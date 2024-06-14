@@ -2,10 +2,13 @@ use bevy::prelude::*;
 
 use crate::core::prelude::*;
 
+use super::component_tile_type;
+
 #[derive(Bundle)]
 pub(crate) struct FloorBundle {
     name: Name,
     sprite_sheet_bundle: SpriteSheetBundle,
+    tile_type: component_tile_type::ComponentTileType,
 }
 
 impl FloorBundle {
@@ -14,6 +17,7 @@ impl FloorBundle {
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
         index: usize,
         spawn_position: Vec2,
+        tile_type: component_tile_type::ComponentTileType,
     ) -> Self {
         Self {
             name: Name::new("Floor tile"),
@@ -35,6 +39,7 @@ impl FloorBundle {
                 },
                 ..default()
             },
+            tile_type,
         }
     }
 }

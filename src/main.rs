@@ -1,5 +1,5 @@
 use bevy::{
-    log::LogPlugin,
+    log::{tracing_subscriber::field::debug, LogPlugin},
     prelude::*,
     render::{
         settings::{Backends, RenderCreation, WgpuSettings},
@@ -7,7 +7,7 @@ use bevy::{
     },
     window::{PresentMode, WindowMode},
 };
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_egui::EguiPlugin;
 use bevy_light_2d::plugin::Light2dPlugin;
 
 use core::prelude::*;
@@ -149,7 +149,7 @@ fn add_screen_playing_systems(app: &mut App) {
 }
 
 fn add_screen_playing_debug_systems(app: &mut App) {
-    app.add_plugins(WorldInspectorPlugin::new());
+    app.add_plugins(EguiPlugin);
     app.add_plugins(PerfUiPlugin);
     app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin);
@@ -163,9 +163,11 @@ fn add_screen_playing_debug_systems(app: &mut App) {
     app.add_systems(
         Update,
         (
+            draw_debug_console,
             debug_show_pivot_points,
             debug_show_collision_bounds,
             debug_show_grid_coordinates,
+            debug_draw_ai_stuff,
             debug_show_ai_state_above_enemies,
             enable_disable_debug_console_with_f12,
         )

@@ -8,6 +8,7 @@ pub(crate) struct WallBundle {
     sprite_sheet_bundle: SpriteSheetBundle,
     actor_kind: ComponentActorKind,
     collision: ComponentCanCollide,
+    tile_type: ComponentTileType,
 }
 
 impl WallBundle {
@@ -16,6 +17,7 @@ impl WallBundle {
         texture_atlas_layout_handle: Handle<TextureAtlasLayout>,
         index: usize,
         spawn_position: Vec2,
+        tile_type: ComponentTileType,
     ) -> Self {
         Self {
             name: Name::new("Wall"),
@@ -45,6 +47,7 @@ impl WallBundle {
                 ComponentActorKind::Wall,
                 Vec::new(),
             ),
+            tile_type,
         }
     }
 }

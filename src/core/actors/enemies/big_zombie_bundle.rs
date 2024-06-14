@@ -44,7 +44,7 @@ impl BigZombieBundle {
                 },
                 ..default()
             },
-            movement: ComponentCanMove::new(30.0),
+            movement: ComponentCanMove::new(20.0),
             animation: ComponentCanAnimate::new(ComponentAnimationClipKind::KnightMoving),
             health: ComponentHasHealth::new(start_health),
             collision: ComponentCanCollide::new(
@@ -55,7 +55,7 @@ impl BigZombieBundle {
                 vec![ComponentActorKind::PlayerKnight],
             ),
             damage_dealer: ComponentCanDealDamage::new(25),
-            ai_state: ComponentAI::new(AiState::Idle, 5.0),
+            ai_state: ComponentAI::new(AiState::Idle, 3.0, 80.0, 8.0),
         }
     }
 }

@@ -1,12 +1,12 @@
 use super::prelude::MapGenerationInput;
-use crate::TileType;
+use crate::ComponentTileType;
 use bevy::prelude::*;
 
 #[derive(Component, Resource, Default)]
 pub(crate) struct TiwTileMap {
     pub(crate) map_width: u32,
     pub(crate) map_height: u32,
-    pub(crate) floor_level: Vec<Vec<TileType>>,
+    pub(crate) floor_level: Vec<Vec<ComponentTileType>>,
 }
 
 impl TiwTileMap {
@@ -22,13 +22,13 @@ impl TiwTileMap {
         self.map_width = map_generation_input.map_width;
         self.map_height = map_generation_input.map_height;
 
-        let mut new_floor_map: Vec<Vec<TileType>> = Vec::new();
+        let mut new_floor_map: Vec<Vec<ComponentTileType>> = Vec::new();
 
         //generate room
         for _y in 0..map_generation_input.map_height {
-            let mut row: Vec<TileType> = Vec::new();
+            let mut row: Vec<ComponentTileType> = Vec::new();
             for _x in 0..map_generation_input.map_width {
-                row.push(TileType::Floor0);
+                row.push(ComponentTileType::Floor0);
             }
             new_floor_map.push(row);
         }
@@ -37,10 +37,10 @@ impl TiwTileMap {
         for y in 0..map_generation_input.map_height {
             for x in 0..map_generation_input.map_width {
                 if x == 0 || x == map_generation_input.map_width - 1 {
-                    new_floor_map[y as usize][x as usize] = TileType::MidWall;
+                    new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
                 }
                 if y == 0 || y == map_generation_input.map_height - 1 {
-                    new_floor_map[y as usize][x as usize] = TileType::MidWall;
+                    new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
                 }
             }
         }
@@ -49,15 +49,15 @@ impl TiwTileMap {
     }
 
     pub(crate) fn is_blocking_tile_at_location(&self, x: f32, y: f32) -> bool {
-        let tile_type: TileType = self.get_tile_type_at_location(x, y);
+        let tile_type: ComponentTileType = self.get_tile_type_at_location(x, y);
 
         match tile_type {
-            TileType::MidWall => true,
-            TileType::Floor0 => false,
+            ComponentTileType::MidWall => true,
+            ComponentTileType::Floor0 => false,
         }
     }
 
-    pub(crate) fn get_tile_type_at_location(&self, x: f32, y: f32) -> TileType {
+    pub(crate) fn get_tile_type_at_location(&self, x: f32, y: f32) -> ComponentTileType {
         const TILE_WH: i32 = 16; //* i put it here, will never change and all tiles have same W H */
         let world_x: u32 = x as u32;
         let world_y: u32 = y as u32;
@@ -94,44 +94,49 @@ mod tests {
         tiw_tile_map.map_width = 2;
         tiw_tile_map.map_height = 2;
 
-        let mut new_floor_map: Vec<Vec<TileType>> = Vec::new();
+        let mut new_floor_map: Vec<Vec<ComponentTileType>> = Vec::new();
 
         //generate floor map
         for _y in 0..tiw_tile_map.map_height {
-            let mut row: Vec<TileType> = Vec::new();
+            let mut row: Vec<ComponentTileType> = Vec::new();
             for _x in 0..tiw_tile_map.map_width {
-                row.push(TileType::Floor0);
+                row.push(ComponentTileType::Floor0);
             }
             new_floor_map.push(row);
         }
 
-        new_floor_map[0][0] = TileType::MidWall;
+        new_floor_map[0][0] = ComponentTileType::MidWall;
 
         tiw_tile_map.floor_level = new_floor_map;
 
         let world_x: f32 = 0.0;
         let world_y: f32 = 0.0;
-        let tile_type00: TileType = tiw_tile_map.get_tile_type_at_location(world_x, world_y);
-        assert_eq!(tile_type00, TileType::MidWall);
+        let tile_type00: ComponentTileType =
+            tiw_tile_map.get_tile_type_at_location(world_x, world_y);
+        assert_eq!(tile_type00, ComponentTileType::MidWall);
 
         let world_x: f32 = 1.0;
         let world_y: f32 = 1.0;
-        let tile_type00: TileType = tiw_tile_map.get_tile_type_at_location(world_x, world_y);
-        assert_eq!(tile_type00, TileType::MidWall);
+        let tile_type00: ComponentTileType =
+            tiw_tile_map.get_tile_type_at_location(world_x, world_y);
+        assert_eq!(tile_type00, ComponentTileType::MidWall);
 
         let world_x: f32 = 15.0;
         let world_y: f32 = 15.0;
-        let tile_type00: TileType = tiw_tile_map.get_tile_type_at_location(world_x, world_y);
-        assert_eq!(tile_type00, TileType::MidWall);
+        let tile_type00: ComponentTileType =
+            tiw_tile_map.get_tile_type_at_location(world_x, world_y);
+        assert_eq!(tile_type00, ComponentTileType::MidWall);
 
         let world_x: f32 = 16.0;
         let world_y: f32 = 16.0;
-        let tile_type00: TileType = tiw_tile_map.get_tile_type_at_location(world_x, world_y);
-        assert_eq!(tile_type00, TileType::Floor0);
+        let tile_type00: ComponentTileType =
+            tiw_tile_map.get_tile_type_at_location(world_x, world_y);
+        assert_eq!(tile_type00, ComponentTileType::Floor0);
 
         let world_x: f32 = 17.0;
         let world_y: f32 = 17.0;
-        let tile_type00: TileType = tiw_tile_map.get_tile_type_at_location(world_x, world_y);
-        assert_eq!(tile_type00, TileType::Floor0);
+        let tile_type00: ComponentTileType =
+            tiw_tile_map.get_tile_type_at_location(world_x, world_y);
+        assert_eq!(tile_type00, ComponentTileType::Floor0);
     }
 }
