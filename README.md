@@ -25,7 +25,8 @@ My goals are:
 Latest version screenshot.
 
 
-![image](https://github.com/Retrodad0001/evil_dungeon/assets/9283221/30428583-2784-404e-8572-780220d91ecb)
+![image](https://github.com/Retrodad0001/evil_dungeon/assets/9283221/389f5b44-6fff-4718-a85b-d85397e3ce0b)
+
 
 
 
