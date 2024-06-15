@@ -24,8 +24,9 @@ debug = false
 # Use the latest versions for beavy and releated crates until all features needed in stable release
 [dependencies]
 rstest = "0.21.*"
-bevy_light_2d = "0.1.*"
 bevy = "0.13.*"
+rand = "0.8.*"
+bevy_light_2d = "0.1.*"
 bevy_egui = "0.27.*"
 iyes_perf_ui = "0.2.*"
 serde = { version = "1.0.*", features = ["derive"] }

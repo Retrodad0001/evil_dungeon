@@ -12,7 +12,7 @@ pub(crate) struct BigZombieBundle {
     health: ComponentHasHealth,
     collision: ComponentCanCollide,
     damage_dealer: ComponentCanDealDamage,
-    ai_state: ComponentAI,
+    ai_state: ComponentAIBrain,
 }
 
 impl BigZombieBundle {
@@ -55,8 +55,7 @@ impl BigZombieBundle {
                 vec![ComponentActorKind::PlayerKnight],
             ),
             damage_dealer: ComponentCanDealDamage::new(25),
-            ai_state: ComponentAI::new(AiState::Idle, 1.0
-                , 80.0, 20.0),
+            ai_state: ComponentAIBrain::new(ComponentAiAction::Idle, 1.0, 80.0, 20.0),
         }
     }
 }

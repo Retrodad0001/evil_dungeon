@@ -8,7 +8,10 @@ use crate::core::prelude::*;
 pub(crate) fn draw_debug_console(
     debug_settings: Res<ResourceDebugSettings>,
     mut contexts: EguiContexts,
-    query_all_entities: Query<(&Name, &Transform, &ComponentAI), (Without<ComponentTileType>,)>,
+    query_all_entities: Query<
+        (&Name, &Transform, &ComponentAIBrain),
+        (Without<ComponentTileType>,),
+    >,
 ) {
     if !debug_settings.show_debug_info {
         return;
@@ -20,7 +23,7 @@ pub(crate) fn draw_debug_console(
 
             ui.label(format!(
                 "{:?}  [{:3.3},{:3.3}] - State: {:?}",
-                name, transform.translation.x, transform.translation.y, ai.current_state
+                name, transform.translation.x, transform.translation.y, ai.current_action
             ));
         }
     });
@@ -70,7 +73,7 @@ pub(crate) fn debug_show_collision_bounds(
 
 pub(crate) fn debug_draw_ai_stuff(
     debug_settings: Res<ResourceDebugSettings>,
-    query_all_entities: Query<(&Transform, &ComponentAI), (Without<ComponentCameraTag>,)>,
+    query_all_entities: Query<(&Transform, &ComponentAIBrain), (Without<ComponentCameraTag>,)>,
     mut gizmos: Gizmos,
 ) {
     if !debug_settings.show_debug_info {
@@ -78,14 +81,14 @@ pub(crate) fn debug_draw_ai_stuff(
     }
     query_all_entities
         .into_iter()
-        .for_each(|(transform, ai): (&Transform, &ComponentAI)| {
+        .for_each(|(transform, ai): (&Transform, &ComponentAIBrain)| {
             let position: Vec2 = Vec2::new(transform.translation.x, transform.translation.y);
 
             //* draw chase radius
 
             //* if there is an target and chasing draw chase line
-            match ai.current_state {
-                AiState::Chasing => {
+            match ai.current_action {
+                ComponentAiAction::Chasing => {
                     gizmos.circle_2d(position, ai.chase_attack_range, Color::YELLOW);
 
                     if let Some(target) = ai.next_target_position {
@@ -93,8 +96,8 @@ pub(crate) fn debug_draw_ai_stuff(
                         gizmos.line_2d(position, target_position, Color::YELLOW);
                     }
                 }
-                AiState::Idle => {}
-                AiState::Wandering => {
+                ComponentAiAction::Idle => {}
+                ComponentAiAction::Wandering => {
                     gizmos.circle_2d(position, ai.chase_attack_range, Color::GREEN);
 
                     if let Some(target) = ai.next_target_position {
@@ -102,7 +105,7 @@ pub(crate) fn debug_draw_ai_stuff(
                         gizmos.line_2d(position, target_position, Color::GREEN);
                     }
                 }
-                AiState::AttackMelee => {
+                ComponentAiAction::AttackMelee => {
                     gizmos.circle_2d(position, ai.chase_attack_range, Color::RED);
 
                     if let Some(target) = ai.next_target_position {
@@ -110,8 +113,8 @@ pub(crate) fn debug_draw_ai_stuff(
                         gizmos.line_2d(position, target_position, Color::RED);
                     }
                 }
-                AiState::AttackingWithSpawningEnemies => todo!(),
-                AiState::Fleeing => {}
+                ComponentAiAction::AttackingWithSpawningEnemies => todo!(),
+                ComponentAiAction::Fleeing => {}
             }
         });
 }

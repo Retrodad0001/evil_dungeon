@@ -59,7 +59,7 @@ pub(crate) fn new_level(
     for y in 0..resource_game_state.tiw_tile_map.map_height {
         for x in 0..resource_game_state.tiw_tile_map.map_width {
             let tile: ComponentTileType =
-                resource_game_state.tiw_tile_map.floor_level[y as usize][x as usize];
+                resource_game_state.tiw_tile_map.tile_map[y as usize][x as usize];
 
             match tile {
                 ComponentTileType::Floor0 => {
@@ -91,7 +91,7 @@ pub(crate) fn new_level(
     //spawn player in level
     let spawn_location: Vec2 = resource_game_state
         .tiw_tile_map
-        .get_random_non_blocking_tile_position();
+        .get_world_position_from_tile_position(2, 2);
 
     let index_knight_idle: usize = atlas_info.get_bevy_atlas_index_by_file_name(KNIGHT_IDLE_0);
     commands.spawn(KnightBundle::new(
@@ -161,26 +161,32 @@ pub(crate) fn calculate_movement_direction_for_player(
 
 pub(crate) fn do_fancy_ai_for_enemies(
     mut enemies_query: Query<
-        (&mut Transform, &mut ComponentAI, &ComponentActorKind),
+        (&mut Transform, &mut ComponentAIBrain, &ComponentActorKind),
         Without<ComponentPlayerTag>,
     >,
     player_query: Query<&Transform, With<ComponentPlayerTag>>,
     time: Res<Time>,
+    resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
 ) {
     let enemies = enemies_query.iter_mut();
     let player = player_query.single();
 
     for (transform, mut ai, actor_kind) in enemies {
-        ai.timer.tick(time.delta());
+        ai.ai_check_timer.tick(time.delta());
 
-        if ai.timer.finished() {
-            ai.determine_new_state(*actor_kind, transform.translation, player.translation);
+        if ai.ai_check_timer.finished() {
+            ai.determine_new_state(
+                *actor_kind,
+                transform.translation,
+                player.translation,
+                &resource_game_state.tiw_tile_map,
+            );
         }
     }
 }
 
 pub(crate) fn calculate_movement_direction_for_enemies_based_on_ai_state(
-    mut enemies_query: Query<(&mut ComponentCanMove, &ComponentAI, &Transform)>,
+    mut enemies_query: Query<(&mut ComponentCanMove, &ComponentAIBrain, &Transform)>,
 ) {
     let enemies = enemies_query.iter_mut();
 
@@ -194,15 +200,15 @@ pub(crate) fn calculate_movement_direction_for_enemies_based_on_ai_state(
         let mut new_direction: Vec3 = ai.next_target_position.unwrap() - transform.translation;
         new_direction = new_direction.normalize_or_zero();
 
-        match ai.current_state {
-            AiState::Idle => {
+        match ai.current_action {
+            ComponentAiAction::Idle => {
                 movement.direction = Vec3::ZERO;
             }
-            AiState::AttackingWithSpawningEnemies
-            | AiState::Fleeing
-            | AiState::Wandering
-            | AiState::Chasing
-            | AiState::AttackMelee => {
+            ComponentAiAction::AttackingWithSpawningEnemies
+            | ComponentAiAction::Fleeing
+            | ComponentAiAction::Wandering
+            | ComponentAiAction::Chasing
+            | ComponentAiAction::AttackMelee => {
                 movement.direction = new_direction;
             }
         }

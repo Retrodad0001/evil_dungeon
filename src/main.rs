@@ -1,5 +1,5 @@
 use bevy::{
-    log::{tracing_subscriber::field::debug, LogPlugin},
+    log::LogPlugin,
     prelude::*,
     render::{
         settings::{Backends, RenderCreation, WgpuSettings},
@@ -82,7 +82,7 @@ fn add_plugins(app: &mut App) {
 }
 
 fn add_type_registrations(app: &mut App) {
-    app.register_type::<ComponentAI>();
+    app.register_type::<ComponentAIBrain>();
     app.register_type::<ComponentCanMove>();
     app.register_type::<ComponentCanAnimate>();
     app.register_type::<ComponentActorKind>();
@@ -91,6 +91,7 @@ fn add_type_registrations(app: &mut App) {
     app.register_type::<TexturePackerAtlasInfo>();
     app.register_type::<ResourceAnimationInfo>();
     app.register_type::<ComponentPlayerTag>();
+    app.register_type::<ComponentAiAction>();
 }
 
 fn add_resources(app: &mut App) {

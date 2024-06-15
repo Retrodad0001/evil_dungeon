@@ -1,7 +1,7 @@
-mod ai_states;
-mod component_ai;
+mod component_ai_actions;
+mod component_ai_brain;
 
 pub(crate) mod prelude {
-    pub(crate) use super::ai_states::*;
-    pub(crate) use super::component_ai::*;
+    pub(crate) use super::component_ai_actions::*;
+    pub(crate) use super::component_ai_brain::*;
 }
