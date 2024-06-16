@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentCameraTag;
 
 impl ComponentCameraTag {

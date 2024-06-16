@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_light_2d::light::PointLight2d;
 
 use crate::core::prelude::*;
 
@@ -14,7 +13,6 @@ pub(crate) struct KnightBundle {
     health: ComponentHasHealth,
     collision: ComponentCanCollide,
     damage_dealer: ComponentCanDealDamage,
-    point_light: PointLight2d,
 }
 
 impl KnightBundle {
@@ -58,12 +56,6 @@ impl KnightBundle {
                 vec![ComponentActorKind::Wall, ComponentActorKind::BigZombie],
             ),
             damage_dealer: ComponentCanDealDamage::new(10),
-            point_light: PointLight2d {
-                color: Color::WHITE,
-                intensity: 80.0,
-                radius: 130.0,
-                ..Default::default()
-            },
         }
     }
 }

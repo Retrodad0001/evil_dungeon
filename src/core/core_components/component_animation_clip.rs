@@ -1,8 +1,8 @@
 use super::prelude::*;
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentAnimationClip {
     pub(crate) animation_kind: ComponentAnimationClipKind,
     pub(crate) animation_frames: Vec<i32>,

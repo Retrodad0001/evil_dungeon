@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
 pub(crate) struct ComponentCanDealDamage {
     pub(crate) damage_amount: i32,
 }

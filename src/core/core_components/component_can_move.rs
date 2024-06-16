@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 //TODO use bevy_math::Dir2; -->use Dir2   crates/bevy_math/src/direction.rs
 
-#[derive(Component, Reflect, Resource, Default)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentCanMove {
     pub(crate) direction: Vec3,
     pub(crate) current_velocity: Vec3,

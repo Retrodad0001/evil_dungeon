@@ -2,8 +2,8 @@ use crate::core::prelude::*;
 
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentCanAnimate {
     previous_animation_kind: ComponentAnimationClipKind,
     animation_frame_timer_sec: f32,
@@ -97,6 +97,11 @@ impl ComponentCanAnimate {
                     Some(ComponentAnimationClipKind::BigZombieIdle)
                 }
             }
+            ComponentActorKind::Door => todo!(),
+            ComponentActorKind::Axe => todo!(),
+            ComponentActorKind::Wizard => todo!(),
+            ComponentActorKind::WizardSpawn => todo!(),
+            ComponentActorKind::SomeBoss => todo!(),
         }
     }
 }

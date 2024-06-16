@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentPlayerTag;
 
 impl ComponentPlayerTag {

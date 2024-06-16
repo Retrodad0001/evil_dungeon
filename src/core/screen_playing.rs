@@ -48,7 +48,7 @@ pub(crate) fn new_level(
 ) {
     debug!("start - new_level");
 
-    let map_generation_input: MapGenerationInput = MapGenerationInput::new(20, 20);
+    let map_generation_input: MapGenerationInput = MapGenerationInput::new(20, 20, 0, 0, 0, 0);
 
     resource_game_state
         .tiw_tile_map

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
+
 pub(crate) struct ComponentHasHealth {
     pub(crate) current_health: i32,
     pub(crate) marked_as_dead: bool,

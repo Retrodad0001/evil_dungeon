@@ -7,7 +7,7 @@ use crate::{
     KNIGHT_RUN_0, KNIGHT_RUN_1, KNIGHT_RUN_2, KNIGHT_RUN_3,
 };
 
-#[derive(Resource, Debug, Default, Reflect)]
+#[derive(Resource, Debug, Default)]
 pub(crate) struct ResourceAnimationInfo {
     pub(crate) animation_clips: HashMap<ComponentAnimationClipKind, ComponentAnimationClip>,
 }

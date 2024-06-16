@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Resource, Default, Debug, PartialEq, Clone, Copy)]
-#[reflect(Resource)]
+#[derive(Component, Default, Debug, PartialEq, Clone, Copy)]
 pub(crate) enum ComponentAiAction {
     #[default]
     Idle,

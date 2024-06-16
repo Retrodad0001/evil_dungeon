@@ -8,7 +8,6 @@ use bevy::{
     window::{PresentMode, WindowMode},
 };
 use bevy_egui::EguiPlugin;
-use bevy_light_2d::plugin::Light2dPlugin;
 
 use core::prelude::*;
 use iyes_perf_ui::PerfUiPlugin;
@@ -23,7 +22,6 @@ fn main() {
 
     add_plugins(&mut app);
     add_resources(&mut app);
-    add_type_registrations(&mut app);
     add_events(&mut app);
 
     add_screen_menu_on_enter_systems(&mut app);
@@ -77,21 +75,6 @@ fn add_plugins(app: &mut App) {
                 ..default()
             }),
     );
-
-    app.add_plugins(Light2dPlugin {});
-}
-
-fn add_type_registrations(app: &mut App) {
-    app.register_type::<ComponentAIBrain>();
-    app.register_type::<ComponentCanMove>();
-    app.register_type::<ComponentCanAnimate>();
-    app.register_type::<ComponentActorKind>();
-    app.register_type::<ComponentCanCollide>();
-    app.register_type::<ComponentHasHealth>();
-    app.register_type::<TexturePackerAtlasInfo>();
-    app.register_type::<ResourceAnimationInfo>();
-    app.register_type::<ComponentPlayerTag>();
-    app.register_type::<ComponentAiAction>();
 }
 
 fn add_resources(app: &mut App) {

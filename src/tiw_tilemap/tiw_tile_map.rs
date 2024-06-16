@@ -20,31 +20,13 @@ impl TiwTileMap {
     }
 
     pub(crate) fn generate_level(&mut self, map_generation_input: MapGenerationInput) {
-        self.map_width = map_generation_input.map_width;
-        self.map_height = map_generation_input.map_height;
+        self.map_width = map_generation_input.width;
+        self.map_height = map_generation_input.height;
 
         let mut new_floor_map: Vec<Vec<ComponentTileType>> = Vec::new();
 
-        //generate room
-        for _y in 0..map_generation_input.map_height {
-            let mut row: Vec<ComponentTileType> = Vec::new();
-            for _x in 0..map_generation_input.map_width {
-                row.push(ComponentTileType::Floor0);
-            }
-            new_floor_map.push(row);
-        }
-
-        //generate walls
-        for y in 0..map_generation_input.map_height {
-            for x in 0..map_generation_input.map_width {
-                if x == 0 || x == map_generation_input.map_width - 1 {
-                    new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
-                }
-                if y == 0 || y == map_generation_input.map_height - 1 {
-                    new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
-                }
-            }
-        }
+        //* generate rooms
+        generate_room(map_generation_input, &mut new_floor_map); //
 
         self.tile_map = new_floor_map;
     }
@@ -104,6 +86,31 @@ impl TiwTileMap {
         }
 
         result
+    }
+}
+
+fn generate_room(
+    generation_input: MapGenerationInput,
+    new_floor_map: &mut Vec<Vec<ComponentTileType>>,
+) {
+    for _y in 0..generation_input.height {
+        let mut row: Vec<ComponentTileType> = Vec::new();
+        for _x in 0..generation_input.width {
+            row.push(ComponentTileType::Floor0);
+        }
+        new_floor_map.push(row);
+    }
+
+    //generate walls in room
+    for y in 0..generation_input.height {
+        for x in 0..generation_input.width {
+            if x == 0 || x == generation_input.width - 1 {
+                new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
+            }
+            if y == 0 || y == generation_input.height - 1 {
+                new_floor_map[y as usize][x as usize] = ComponentTileType::MidWall;
+            }
+        }
     }
 }
 

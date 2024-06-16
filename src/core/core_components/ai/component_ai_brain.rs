@@ -2,8 +2,7 @@ use bevy::prelude::*;
 
 use crate::{tiw_tilemap::prelude::TiwTileMap, ComponentActorKind, ComponentAiAction};
 
-#[derive(Component, Reflect, Resource, Default)]
-#[reflect(Resource)]
+#[derive(Component)]
 pub(crate) struct ComponentAIBrain {
     pub(crate) current_action: ComponentAiAction,
     pub(crate) next_target_position: Option<Vec3>,
@@ -44,6 +43,11 @@ impl ComponentAIBrain {
             ComponentActorKind::BigZombie => {
                 self.big_zombie_process_ai(enemy_pos, player_pos, tile_map);
             }
+            ComponentActorKind::Door => todo!(),
+            ComponentActorKind::Axe => todo!(),
+            ComponentActorKind::Wizard => todo!(),
+            ComponentActorKind::WizardSpawn => todo!(),
+            ComponentActorKind::SomeBoss => todo!(),
         }
     }
 

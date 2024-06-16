@@ -2,8 +2,7 @@ use bevy::{math::bounding::Aabb2d, prelude::*};
 
 use crate::ComponentActorKind;
 
-#[derive(Component, Reflect, Resource, Default, Debug)]
-#[reflect(Resource)]
+#[derive(Component, Debug)]
 pub(crate) struct ComponentCanCollide {
     pub(crate) offset: Vec2,
     pub(crate) bounds_width: f32,
