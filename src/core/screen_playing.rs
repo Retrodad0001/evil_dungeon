@@ -48,7 +48,7 @@ pub(crate) fn new_level(
 ) {
     debug!("start - new_level");
 
-    let map_generation_input: MapGenerationInput = MapGenerationInput::new(20, 20, 0, 0, 0, 0);
+    let map_generation_input: MapGenerationInput = MapGenerationInput::new(20, 20);
 
     resource_game_state
         .tiw_tile_map
@@ -105,7 +105,7 @@ pub(crate) fn new_level(
     //spawn enemies in level
     let spawn_location: Vec2 = resource_game_state
         .tiw_tile_map
-        .get_world_position_from_tile_position(10, 15);
+        .get_random_non_blocking_tile_world_position();
     let index_big_zombie_idle: usize =
         atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
     commands.spawn(BigZombieBundle::new(
@@ -119,7 +119,7 @@ pub(crate) fn new_level(
     //spawn enemies in level
     let spawn_location: Vec2 = resource_game_state
         .tiw_tile_map
-        .get_world_position_from_tile_position(15, 8);
+        .get_random_non_blocking_tile_world_position();
     let index_big_zombie_idle: usize =
         atlas_info.get_bevy_atlas_index_by_file_name(BIG_ZOMBIE_IDLE_0);
     commands.spawn(BigZombieBundle::new(
@@ -137,7 +137,7 @@ pub(crate) fn calculate_movement_direction_for_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut ComponentCanMove, &ComponentPlayerTag, &mut Transform)>,
 ) {
-    let mut direction_vector: Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    let mut direction_vector: Vec2 = Vec2::new(0.0, 0.0);
 
     if keyboard_input.pressed(KeyCode::KeyA) || keyboard_input.pressed(KeyCode::ArrowLeft) {
         direction_vector.x = -1.0;
@@ -168,18 +168,27 @@ pub(crate) fn do_fancy_ai_for_enemies(
     time: Res<Time>,
     resource_game_state: Res<resource_general_game_state::ResourceGeneralGameState>,
 ) {
-    let enemies = enemies_query.iter_mut();
+    let enemies: bevy::ecs::query::QueryIter<
+        (&mut Transform, &mut ComponentAIBrain, &ComponentActorKind),
+        Without<ComponentPlayerTag>,
+    > = enemies_query.iter_mut();
     let player = player_query.single();
 
     for (transform, mut ai, actor_kind) in enemies {
         ai.ai_check_timer.tick(time.delta());
 
+        let max_wander_time = ai.max_wander_time;
+
+        let enemy_pos: Vec2 = Vec2::new(transform.translation.x, transform.translation.y);
+        let player_pos: Vec2 = Vec2::new(player.translation.x, player.translation.y);
+
         if ai.ai_check_timer.finished() {
             ai.determine_new_state(
                 *actor_kind,
-                transform.translation,
-                player.translation,
+                enemy_pos,
+                player_pos,
                 &resource_game_state.tiw_tile_map,
+                &max_wander_time,
             );
         }
     }
@@ -197,16 +206,15 @@ pub(crate) fn calculate_movement_direction_for_enemies_based_on_ai_state(
             continue;
         }
 
-        let mut new_direction: Vec3 = ai.next_target_position.unwrap() - transform.translation;
+        let mut new_direction: Vec2 = ai.next_target_position.unwrap()
+            - Vec2::new(transform.translation.x, transform.translation.y);
         new_direction = new_direction.normalize_or_zero();
 
         match ai.current_action {
             ComponentAiAction::Idle => {
-                movement.direction = Vec3::ZERO;
+                movement.direction = Vec2::ZERO;
             }
-            ComponentAiAction::AttackingWithSpawningEnemies
-            | ComponentAiAction::Fleeing
-            | ComponentAiAction::Wandering
+            ComponentAiAction::Wandering
             | ComponentAiAction::Chasing
             | ComponentAiAction::AttackMelee => {
                 movement.direction = new_direction;
@@ -231,7 +239,7 @@ pub(crate) fn animate_all(
     for (actor_kind, movement, mut animation, mut texture_atlas, mut sprite) in
         animation_entities_query.iter_mut()
     {
-        let atlas_index: i32 = animation
+        let atlas_index: u32  = animation
             .determine_current_atlas_index_for_animation(
                 actor_kind,
                 &movement.direction,
@@ -258,20 +266,17 @@ pub(crate) fn calculate_velocity_based_on_movement_direction_for_player(
 
     player.1.calculate_velocity_no_slerp(&delta_time);
 
-    let direction: Vec3 = player.1.direction;
+    let direction: Vec2 = player.1.direction;
     let mut ray_length: f32 = 10.0;
 
     if direction.y < 0.0 {
         ray_length -= 12.0;
     } //* in future use real raycast with builtin bevy bounds functionality
 
-    let additional_distance: Vec3 = direction * ray_length;
+    let additional_distance: Vec2 = direction * ray_length;
 
-    let search_tile_location: Vec3 = Vec3::new(
-        player.0.translation.x,
-        player.0.translation.y,
-        player.0.translation.z,
-    ) + additional_distance;
+    let search_tile_location: Vec2 =
+        Vec2::new(player.0.translation.x, player.0.translation.y) + additional_distance;
 
     let is_blocking_tile_in_that_direction: bool = resource_game_state
         .tiw_tile_map
@@ -280,7 +285,7 @@ pub(crate) fn calculate_velocity_based_on_movement_direction_for_player(
     if is_blocking_tile_in_that_direction {
         info!("player is blocked by wall");
     } else {
-        let new_location = player.0.translation
+        let new_location: Vec3 = player.0.translation
             + Vec3::new(
                 player.1.current_velocity.x,
                 player.1.current_velocity.y,

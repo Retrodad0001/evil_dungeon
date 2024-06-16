@@ -8,11 +8,4 @@ pub(crate) enum ComponentAnimationClipKind {
     KnightMoving = 1,
     BigZombieIdle = 2,
     BigZombieMoving = 3,
-    DoorOpening = 4,
-    DoorClose = 5,
-    Axe = 6,
-    WizardIdle = 7,
-    WizardMoving = 8,
-    WizardSpawnIdle = 9,
-    WizardSpawnMoving = 10,
 }

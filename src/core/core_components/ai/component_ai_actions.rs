@@ -4,9 +4,7 @@ use bevy::prelude::*;
 pub(crate) enum ComponentAiAction {
     #[default]
     Idle,
-    Wandering,
-    Chasing,
-    AttackMelee,
-    AttackingWithSpawningEnemies,
-    Fleeing,
+    Wandering,   //TODO and wandering time to this state (another struct)
+    Chasing,     //TODO and chasing vars time to this state (another struct)
+    AttackMelee, //TODO and AttackMelee vars time to this state (another struct)
 }

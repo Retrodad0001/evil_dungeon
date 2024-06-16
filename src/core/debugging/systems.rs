@@ -113,8 +113,6 @@ pub(crate) fn debug_draw_ai_stuff(
                         gizmos.line_2d(position, target_position, Color::RED);
                     }
                 }
-                ComponentAiAction::AttackingWithSpawningEnemies => todo!(),
-                ComponentAiAction::Fleeing => {}
             }
         });
 }

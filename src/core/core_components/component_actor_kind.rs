@@ -7,9 +7,4 @@ pub(crate) enum ComponentActorKind {
     PlayerKnight, //* = player */
     BigZombie,
     Wall,
-    Door,
-    Axe,
-    Wizard,
-    WizardSpawn,
-    SomeBoss,
 }

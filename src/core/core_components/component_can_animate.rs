@@ -7,7 +7,7 @@ use bevy::prelude::*;
 pub(crate) struct ComponentCanAnimate {
     previous_animation_kind: ComponentAnimationClipKind,
     animation_frame_timer_sec: f32,
-    current_animation_frame: i32,
+    current_animation_frame: u32,
 }
 
 impl ComponentCanAnimate {
@@ -23,10 +23,10 @@ impl ComponentCanAnimate {
     pub(crate) fn determine_current_atlas_index_for_animation(
         &mut self,
         actor_kind: &ComponentActorKind,
-        direction: &Vec3,
+        direction: &Vec2,
         delta_time: f32,
         animation_info: &Res<ResourceAnimationInfo>,
-    ) -> Option<i32> {
+    ) -> Option<u32> {
         //determine the current animation clip based on the direction
 
         let animation_kind_option: Option<ComponentAnimationClipKind> =
@@ -45,7 +45,7 @@ impl ComponentCanAnimate {
             if self.animation_frame_timer_sec >= new_animation_clip.time_between_frames_sec {
                 self.animation_frame_timer_sec = 0.0;
 
-                if new_animation_clip.animation_frames.len() as i32
+                if new_animation_clip.animation_frames.len() as u32
                     <= self.current_animation_frame + 1
                 {
                     self.current_animation_frame = 0;
@@ -57,7 +57,7 @@ impl ComponentCanAnimate {
             self.previous_animation_kind = new_animation_kind;
             self.animation_frame_timer_sec += delta_time;
 
-            let current_atlas_index: i32 =
+            let current_atlas_index: u32 =
                 new_animation_clip.animation_frames[self.current_animation_frame as usize];
 
             Some(current_atlas_index)
@@ -74,7 +74,7 @@ impl ComponentCanAnimate {
     fn determine_animation_clip(
         &mut self,
         actor_kind: &ComponentActorKind,
-        direction: &Vec3,
+        direction: &Vec2,
     ) -> Option<ComponentAnimationClipKind> {
         let actor_is_moving: bool = direction.length() > 0.0;
 
@@ -97,11 +97,6 @@ impl ComponentCanAnimate {
                     Some(ComponentAnimationClipKind::BigZombieIdle)
                 }
             }
-            ComponentActorKind::Door => todo!(),
-            ComponentActorKind::Axe => todo!(),
-            ComponentActorKind::Wizard => todo!(),
-            ComponentActorKind::WizardSpawn => todo!(),
-            ComponentActorKind::SomeBoss => todo!(),
         }
     }
 }
