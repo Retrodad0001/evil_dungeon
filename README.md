@@ -17,7 +17,7 @@ My goals are:
 
 - I want to learn how to maximize automatic testing with Bevy because I want to reuse this knowledge in a bigger-scale game and learn about testing in Rust. (including performance testing)
 
-- It must be a polished game, not just a tech demo, so I can learn to polish and deploy it to Steam.
+- It must be a polished game, not just a tech demo, so I can learn to polish and deploy it to Steam for free
 
 Latest version screenshot.
 
