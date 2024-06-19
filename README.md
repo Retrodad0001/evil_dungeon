@@ -2,25 +2,22 @@
 
 A 2d dungeon crawler made with the Bevy Engine in Rust. 
 
-I created this game to learn more about the Bevy Engine and the Rust language. Maybe it will be helpful for someone else, too.
+I created this game to learn more about the Bevy Engine and the Rust language. It may also be helpful to someone else.
 
 
 There are many ways to implement the design; context is essential, like performance or maintainability constraints.
 
 My goals are:
 
-- Have discussions with the community about ECS design and the trade-offs in the context of maintainability
+- Have discussions with the community about ECS vs OO design and the trade-offs in the context of maintainability
 
-- Try to keep the complexity of the code to a minimum and only increase the complexity (like extra abstractions or generic crates) when the need arises for the sake of performance or extensibility.
+- Try to keep the complexity of the code to a minimum and only increase the complexity (like extra abstractions or generic types) when the need arises for the sake of performance or extensibility.
 
-- Use as much Bevy as possible instead of external crates. The exceptions are crates that fill in the functionality gab.
+- Use as much Bevy as possible instead of external crates.
 
-- I want to learn more about the trade-off between the maintainability of ECS and OO (maybe I will find the sweet spot between the two).
+- I want to learn how to maximize automatic testing with Bevy because I want to reuse this knowledge in a bigger-scale game and learn about testing in Rust. (including performance testing)
 
-- I like the Rust tooling. I want to learn (even when it's not needed for the game) how to maximize automatic testing (unit and integration) so I can determine what is possible and reuse that Knowledge when creating another “real” game.
-
-- It must be a polished game, not just a tech demo, so I can learn to polish with Bevy and the ECS paradigm.
-
+- It must be a polished game, not just a tech demo, so I can learn to polish and deploy it to Steam.
 
 Latest version screenshot.
 
