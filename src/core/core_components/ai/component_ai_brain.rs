@@ -1,7 +1,9 @@
+//TODO remove me at the end
 use bevy::prelude::*;
-use rand::{rngs::ThreadRng, Rng};
 
 use crate::{tiw_tilemap::prelude::TiwTileMap, ComponentActorKind, ComponentAiAction};
+
+use super::ai_common;
 
 #[derive(Component)]
 pub(crate) struct ComponentAIBrain {
@@ -11,7 +13,7 @@ pub(crate) struct ComponentAIBrain {
     pub(crate) chase_attack_range: f32,
     pub(crate) attack_melee_range: f32,
     pub(crate) max_wander_time: f32,
-    wandering_timer: f32,
+    pub(crate) wandering_timer: f32,
 }
 
 impl ComponentAIBrain {
@@ -67,8 +69,8 @@ impl ComponentAIBrain {
                 self.next_target_position = None;
             }
             ComponentAiAction::Wandering => {
-                let distance_to_player: f32 = get_distance_to_actor(enemy_pos, player_pos);
-                let is_chasing_range: bool = distance_to_player < self.chase_attack_range;
+                let is_chasing_range: bool =
+                    ai_common::is_in_range(&enemy_pos, &player_pos, self.chase_attack_range);
 
                 if is_chasing_range {
                     let already_chasing: bool = self.current_action == ComponentAiAction::Chasing;
@@ -81,13 +83,11 @@ impl ComponentAIBrain {
                     self.next_target_position = Some(player_pos);
                 } else {
                     self.wandering_timer += 1.0;
-                    info!("wandering timer: {}", self.wandering_timer);
-
                     if self.wandering_timer < *max_wander_time {
                         return;
                     }
 
-                    //TODO add random wander time, the code below panics, maybe use bevy specific random
+                    //TODO add random wander time, the code below panics, maybe use bevy specific random crate
                     //*  let mut rng: ThreadRng = rand::thread_rng();
                     //*  let next_random_wander_time: f32 =
                     //*  rng.gen_range(2..self.max_wander_time as i32) as f32;
@@ -102,7 +102,10 @@ impl ComponentAIBrain {
                 }
             }
             ComponentAiAction::Chasing => {
-                if get_distance_to_actor(enemy_pos, player_pos) < self.attack_melee_range {
+                let is_in_melee_attack_range: bool =
+                    ai_common::is_in_range(&enemy_pos, &player_pos, self.attack_melee_range);
+
+                if is_in_melee_attack_range {
                     self.current_action = ComponentAiAction::AttackMelee;
                 } else {
                     //* move towards player so state is still chasing,
@@ -113,7 +116,10 @@ impl ComponentAIBrain {
             ComponentAiAction::AttackMelee => {
                 //* attack actor */ by event
 
-                if get_distance_to_actor(enemy_pos, player_pos) > self.attack_melee_range {
+                let is_in_melee_attack_range: bool =
+                    ai_common::is_in_range(&enemy_pos, &player_pos, self.attack_melee_range);
+
+                if !is_in_melee_attack_range {
                     self.current_action = ComponentAiAction::Chasing;
                 } else {
                     self.current_action = ComponentAiAction::AttackMelee;
@@ -121,10 +127,4 @@ impl ComponentAIBrain {
             }
         }
     }
-}
-
-#[inline(always)]
-fn get_distance_to_actor(actor_from: Vec2, actor_to: Vec2) -> f32 {
-    let result: f32 = Vec2::distance(actor_from, actor_to);
-    result
 }

@@ -184,7 +184,7 @@ pub(crate) fn do_fancy_ai_for_enemies(
 
         if ai.ai_check_timer.finished() {
             ai.determine_new_state(
-                *actor_kind,
+                actor_kind.clone(),
                 enemy_pos,
                 player_pos,
                 &resource_game_state.tiw_tile_map,
@@ -337,7 +337,7 @@ pub(crate) fn physics_determine_actor_collision_for_all(
 
             if has_collided {
                 event_collision_detected.send(EventCollisionDetected::new(
-                    *actor_a_kind,
+                    actor_a_kind.clone(),
                     entity_a,
                     entity_b,
                 ));
@@ -383,8 +383,9 @@ pub(crate) fn collision_event_handle_damage_dealing_and_health_for_all(
 
             entity_b_health.marked_as_dead = true;
 
-            event_actor_is_killed
-                .send(EventActorIsKilled::new(collision_event.entity_b_actor_kind));
+            event_actor_is_killed.send(EventActorIsKilled::new(
+                collision_event.entity_b_actor_kind.clone(),
+            ));
         }
     }
 }

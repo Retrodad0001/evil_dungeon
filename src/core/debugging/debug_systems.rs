@@ -1,7 +1,6 @@
 use crate::ResourceDebugSettings;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
-use iyes_perf_ui::PerfUiCompleteBundle;
 
 use crate::core::prelude::*;
 
@@ -17,16 +16,24 @@ pub(crate) fn draw_debug_console(
         return;
     }
 
-    egui::Window::new("-- DEBUG CONSOLE --").show(contexts.ctx_mut(), |ui| {
-        for (name, transform, ai) in query_all_entities.iter() {
-            //format transform.translation.x, transform.translation.y with fixed decimal places
+    egui::Window::new("-- DEBUG CONSOLE --")
+        .default_width(800.0)
+        .max_width(800.0)
+        .default_height(1000.0)
+        .show(contexts.ctx_mut(), |ui| {
+            for (name, transform, ai) in query_all_entities.iter() {
+                //format transform.translation.x, transform.translation.y with fixed decimal places
 
-            ui.label(format!(
-                "{:?}  [{:3.3},{:3.3}] - State: {:?}",
-                name, transform.translation.x, transform.translation.y, ai.current_action
-            ));
-        }
-    });
+                ui.label(format!(
+                    "{:?}  [{:3.3},{:3.3}] - State: {:?} - Wandering timer: {:3.3}",
+                    name,
+                    transform.translation.x,
+                    transform.translation.y,
+                    ai.current_action,
+                    ai.wandering_timer
+                ));
+            }
+        });
 }
 
 pub(crate) fn debug_show_pivot_points(
@@ -148,10 +155,6 @@ pub(crate) fn debug_show_grid_coordinates(
             //TODO debug draw text gizmos grid coordinates
         },
     );
-}
-
-pub(crate) fn debug_show_perf_stats(mut commands: Commands) {
-    commands.spawn(PerfUiCompleteBundle::default());
 }
 
 pub(crate) fn enable_disable_debug_console_with_f12(

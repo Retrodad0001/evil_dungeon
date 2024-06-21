@@ -56,6 +56,6 @@ impl BigZombieBundle {
             ),
             damage_dealer: ComponentCanDealDamage::new(25),
             ai_state: ComponentAIBrain::new(ComponentAiAction::Idle, 1.0, 80.0, 20.0, 5.0),
-        } //TODO add formate spec max line length
+        }
     }
 }

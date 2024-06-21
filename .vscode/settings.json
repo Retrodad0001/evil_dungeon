@@ -6,6 +6,7 @@
         "egui",
         "hashbrown",
         "iyes",
+        "pathfinding",
         "raycast",
         "rngs",
         "slerp",

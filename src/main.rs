@@ -10,7 +10,6 @@ use bevy::{
 use bevy_egui::EguiPlugin;
 
 use core::prelude::*;
-use iyes_perf_ui::PerfUiPlugin;
 use tiw_asset_management::prelude::*;
 
 mod core;
@@ -131,15 +130,9 @@ fn add_screen_playing_systems(app: &mut App) {
 
 fn add_screen_playing_debug_systems(app: &mut App) {
     app.add_plugins(EguiPlugin);
-    app.add_plugins(PerfUiPlugin);
     app.add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::EntityCountDiagnosticsPlugin);
     app.add_plugins(bevy::diagnostic::SystemInformationDiagnosticsPlugin);
-
-    app.add_systems(
-        Startup,
-        (debug_show_perf_stats,).run_if(in_state(ScreenState::Playing)),
-    );
 
     app.add_systems(
         Update,

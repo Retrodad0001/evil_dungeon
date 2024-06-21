@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub(crate) struct MapGenerationInput {
-    pub(crate) width: u32,  //TODO remove when rooms are implemented in generation
-    pub(crate) height: u32, //TODO remove when rooms are implemented in generation
+    pub(crate) width: u32,
+    pub(crate) height: u32,
 }
 
 impl MapGenerationInput {
