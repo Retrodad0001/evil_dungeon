@@ -3,7 +3,14 @@ name = "evil_dungeon"
 version = "0.1.0"
 description = "An 2d dungeon crawler to learn Bevy and Rust programming and share the journey with others."
 edition = "2021"
-keywords = ["bevy", "game", "roguelike", "dungeon crawler", "rust", "tutorial"]
+keywords = [
+    "bevy engine",
+    "game",
+    "roguelike",
+    "dungeon crawler",
+    "rust",
+    "tutorial",
+]
 authors = ["Shrine of Tiw Games"]
 license = "MIT"
 
